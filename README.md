@@ -14,12 +14,12 @@ Project directory should contain:
 
 Main (list of functionalities)
 1. Job creation (prepare wirkdir and configure simulation run)
+1a. Results fetching and job cleaning
 2. Cluster section
    * cluster monitoring
    * job starting
    * re-initialising interruped jobs
    * job progress monitoring
-   * results fetching and job cleaning
 3. Processing raw simulation data
    * Monte Carlo (output Sijkl)
 4. Processing NuS (output elastic properties data)
