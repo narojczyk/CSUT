@@ -18,7 +18,10 @@ help_msg() {
 
 usage_msg() { echo "usage_msg"; }
 print_config() { echo "print_config"; }
-self_diagnostic() { echo "self_diagnostic"; }
+self_diagnostic() {
+# run this in the current shell (space after '.')
+. ${CSUT_CORE}/includes/SelfTest/check_environment_vars.sh;
+}
 
 
 return 0;
