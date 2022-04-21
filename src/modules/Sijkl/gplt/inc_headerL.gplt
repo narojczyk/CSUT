@@ -1,0 +1,8 @@
+reset
+
+## rect (golden ratio)
+set terminal epslatex color colortext size 30.0cm,6.20cm standalone
+
+#set size square
+set border 31 lw 0.5
+

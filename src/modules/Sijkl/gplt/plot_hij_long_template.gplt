@@ -1,0 +1,25 @@
+
+load "@PATH@/inc_headerL.gplt"
+load "@PATH@/inc_styles.gplt"
+
+set key outside right reverse noautotitles samplen 1 spacing 0.75 width -3
+
+set mytics 4
+
+datf="@DATA_FILE@"
+
+set ytics autofreq
+set xtics 0, 1000, 1000000
+set xlabel '\tiny data lines' offset 0, 0.5
+set ylabel '\tiny $h_{@INDEX@}$' offset 1, 0
+set title  '\tiny @PL1_TITLE@' offset -4, 0
+set output "@PL1_NAME@"
+xmin=@XRANGE_MIN@
+xmax=@XRANGE@
+
+plot[xmin:xmax] \
+datf u 1:5 t '{\tiny$h_{xy}$}' ls 1 with points,\
+datf u 1:6 t '{\tiny$h_{xz}$}' ls 2 with points,\
+datf u 1:8 t '{\tiny$h_{yz}$}' ls 3 with points
+set output
+

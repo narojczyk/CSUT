@@ -1,0 +1,53 @@
+
+load "@PATH@/inc_header.gplt"
+load "@PATH@/inc_styles.gplt"
+
+set key right reverse noautotitles samplen 1 spacing 0.75 width -4
+
+set mxtics 2
+set mytics 4
+
+datf="@DATA_FILE@"
+
+#scale factor
+sc=10**@SCEXP@
+
+av3(x1,x2,x3)=(x1+x2+x3)/3e0
+av9(x1,x2,x3,x4,x5,x6,x7,x8,x9)=(x1+x2+x3+x4+x5+x6+x7+x8+x9)/9e0
+
+set format y "$%.1f$"
+set ytics autofreq
+set xlabel '\tiny @PL1_XLABEL@' offset 0, 0.5
+set ylabel '\tiny @PL1_YLABEL@' offset 2, 0
+set title  '\tiny @PL1_TITLE@' offset -4, 0
+set output "@PL1_NAME@"
+xmax=@XRANGE@
+
+plot[0:xmax] \
+datf u  1:(sc*$5)  t '{\tiny$S_{11}$}' linestyle 11 with points,\
+datf u  1:(sc*$7)  t '{\tiny$S_{22}$}' linestyle 22 with points,\
+datf u  1:(sc*$9)  t '{\tiny$S_{33}$}' linestyle 33 with points,\
+datf u  1:(sc*$11) t '{\tiny$S_{44}$}' linestyle 44 with points,\
+datf u  1:(sc*$13) t '{\tiny$S_{55}$}' linestyle 55 with points,\
+datf u  1:(sc*$15) t '{\tiny$S_{66}$}' linestyle 66 with points,\
+datf u  1:(sc*$17) t '{\tiny$S_{12}$}' linestyle 12 with points,\
+datf u  1:(sc*$19) t '{\tiny$S_{13}$}' linestyle 13 with points,\
+datf u  1:(sc*$21) t '{\tiny$S_{23}$}' linestyle 23 with points,\
+datf u  1:(sc*$23) t '{\tiny$S_{45}$}' linestyle 45 with points,\
+datf u  1:(sc*$25) t '{\tiny$S_{46}$}' linestyle 46 with points,\
+datf u  1:(sc*$27) t '{\tiny$S_{56}$}' linestyle 56 with points,\
+datf u  1:(sc*$29) t '{\tiny$S_{14}$}' linestyle 14 with points,\
+datf u  1:(sc*$31) t '{\tiny$S_{15}$}' linestyle 15 with points,\
+datf u  1:(sc*$33) t '{\tiny$S_{16}$}' linestyle 16 with points,\
+datf u  1:(sc*$35) t '{\tiny$S_{24}$}' linestyle 24 with points,\
+datf u  1:(sc*$37) t '{\tiny$S_{25}$}' linestyle 25 with points,\
+datf u  1:(sc*$39) t '{\tiny$S_{26}$}' linestyle 26 with points,\
+datf u  1:(sc*$41) t '{\tiny$S_{34}$}' linestyle 34 with points,\
+datf u  1:(sc*$43) t '{\tiny$S_{35}$}' linestyle 35 with points,\
+datf u  1:(sc*$45) t '{\tiny$S_{36}$}' linestyle 36 with points,\
+datf u ($1):(sc*av3($5,$7,$9))  lc 0 with lines,\
+datf u ($1):(sc*av3($11,$13,$15))  lc 0 with lines,\
+datf u ($1):(sc*av3($17,$19,$21))  lc 0 with lines,\
+datf u ($1):(sc*av3($23,$25,$27))  lc 0 with lines,\
+datf u ($1):(sc*av9($29,$31,$33,$35,$37,$39,$41,$43,$45)) lc 0 with lines
+set output

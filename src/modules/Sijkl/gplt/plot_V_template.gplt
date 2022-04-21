@@ -1,0 +1,27 @@
+
+load "@PATH@/inc_header.gplt"
+
+set key at graph 0.85,0.9 reverse noautotitles samplen 1 spacing 0.75 width -3
+
+set mytics 4
+
+datf="@DATA_FILE@"
+
+set logscale x
+set format y "$%.3f$"
+set ytics autofreq
+set xtics autofreq
+set xlabel '\tiny MC step' offset 0, 0.5
+set ylabel '\tiny $V$' offset 1, 0
+set title  '\tiny @PL1_TITLE@' offset -4, 0
+set output "@PL1_NAME@"
+xmin=@XRANGE_MIN@
+xmax=@XRANGE@
+ymin=@YRANGE_MIN@
+ymax=@YRANGE@
+
+plot[xmin:xmax][ymin:ymax] \
+datf u 1:2 t '{\tiny volume}' ls 1 lc rgb "#0000ff" with lines,\
+@AVGVOL@ ls 1 lw 1.5 lc rgb "#000000" with lines
+set output
+

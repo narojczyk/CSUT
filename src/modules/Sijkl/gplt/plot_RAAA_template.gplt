@@ -1,0 +1,31 @@
+
+load "@PATH@/inc_header.gplt"
+
+#load "@PATH@/inc_styles.gplt"
+
+set key at graph 0.25,0.8 reverse noautotitles samplen 1.25 spacing 0.75 width -7 
+
+set mytics 4
+
+
+datf="@DATA_FILE@"
+
+
+set logscale x
+set format y "$%.3f$"
+set ytics autofreq
+set xtics autofreq
+set xlabel '\tiny MC step' offset 0, 0.5
+unset ylabel
+set title  '\tiny @PL1_TITLE@' offset -4, 0
+set output "@PL1_NAME@"
+xmin=@XRANGE_MIN@
+xmax=@XRANGE@
+
+plot[xmin:xmax] \
+datf u 1:10 t '{\tiny$<r_{ij}>$}' ls 1 lc rgb "#000000" with lines,\
+datf u 1:16 t '{\tiny A.R. BOX}' ls 1 lc rgb "#0000ff" with lines,\
+datf u 1:12 t '{\tiny A.R. MOV}' ls 1 lc rgb "#ff0000" with lines,\
+datf u 1:14 t '{\tiny A.R. ROT}' ls 1 lc rgb "#00aa00" with lines
+set output
+
