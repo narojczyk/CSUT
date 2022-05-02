@@ -6,7 +6,7 @@ iam=`echo $(basename $BASH_SOURCE)| sed 's/\.sh//'`
 binconfig="${binary}.ini"
 
 # Set the file pattern for input (use current file names, excepf of '*_full.csv' files)
-input_pattern=`ls *s*[^l].csv | head -n 1 | sed 's/s[0-9]\{4\}/s%04d/'`
+input_pattern=`ls [^2]*s*[^l].csv | head -n 1 | sed 's/s[0-9]\{4\}/s%04d/'`
 
 # Get simulation parameters from first dat file or ini file
 primary_info=0
