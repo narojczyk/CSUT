@@ -67,7 +67,7 @@ source ${MODULES}/sub_select_binary.sh
 source ${MODULES}/sub_workdir.sh
 
 # Link selected binary
-ln -s $SNPTDIR/$binary 2> $logFile
+ln -s $SNPTDIR/$binary 2>> $logFile
 
 # Link and extract data
 i=$dset_sta_id

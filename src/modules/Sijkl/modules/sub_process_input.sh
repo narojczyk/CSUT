@@ -11,7 +11,7 @@ input_pattern=`ls [^2]*s*[^l].csv | head -n 1 | sed 's/s[0-9]\{4\}/s%04d/'`
 # Get simulation parameters from first dat file or ini file
 primary_info=0
 csm=`printf "%04d" 1`
-datfile=`ls *s${csm}.dat 2> $logFile`
+datfile=`ls *s${csm}.dat 2>> $logFile`
 if [ -f $datfile ] ; then
   primary_info=1
   echo "firstDatFile=${datfile}" >> $cacheInfo

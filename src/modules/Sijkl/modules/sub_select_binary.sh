@@ -3,7 +3,7 @@
 iam=`echo $(basename $BASH_SOURCE)| sed 's/\.sh//'`
 
 if [ ! -f $SNPTDIR/$defaultBinary ]; then
-  Tbin=(`ls -ltd $SNPTDIR/$defaultBinaryMarker 2> $logFile |\
+  Tbin=(`ls -ltd $SNPTDIR/$defaultBinaryMarker 2>> $logFile |\
     grep ^-[-r][-w][x] | sed 's/^.*\///'`)
   #  grep -v "\." | grep -v ^d | sed 's/^.*\///'`)
   TbinN=${#Tbin[@]}

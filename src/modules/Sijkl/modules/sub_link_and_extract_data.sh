@@ -26,6 +26,7 @@ printf "  %s\n" $res_base_name
 
 # ... link archives and extract simulation data files
 j=0
+anyErroros=0
 while [ $j -lt $data_setN ]; do
   current_data=${data_set[$j]}
   archive=`echo $current_data | sed 's;^.*/;;'`
@@ -38,6 +39,10 @@ while [ $j -lt $data_setN ]; do
     --wildcards '*part*' \
     --wildcards '[md]*ini' 2> $logExtract
 
+  if [ $? -ne 0 ]; then
+    (( anyErroros++ ))
+  fi
+
   (( j++ ))
 
   progress_bar=`$FPB $j $data_setN $pbLength`
@@ -47,12 +52,20 @@ done
 echo
 
 # Check for error logs
-anyErroros=`cat *.extr.log 2>/dev/null | wc -l`
 if [ $anyErroros -ne 0 ]; then
   printf " [%s] %s: Errors during extraction (%d).\n"\
     $iam $R_err $anyErroros
-  ls -1 *.extr.log
-else  
-  rm *.extr.log
-fi
+  unset elogs
+  j=0
+  elogs=(`ls -1 *extr.log`)
+  while [ $j -lt ${#elogs[@]} ]; do
+    elog=${elogs[$j]} 
+    echo $elog >> $logFile
+    cat $elog >> $logFile
+    rm $elog
+    (( j++ ))
+  done
+fi 
+
+
     
