@@ -1,2 +1,4 @@
 *~
 fancypb
+*.log
+*.cfg
