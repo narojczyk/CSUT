@@ -5,7 +5,7 @@ if [ "$opMode" = "dev" ]; then
   hereANDnow=`date +"%F"`
   debugMode=1
 elif [ "$opMode" = "aux" ]; then
-  scratch=$SCRATCH1
+  SCRATCH=$SCRATCH1
 else
     comment="Current value for opMode=$opMode has no effect"
     if [ -z ${logFile:+x} ]; then 

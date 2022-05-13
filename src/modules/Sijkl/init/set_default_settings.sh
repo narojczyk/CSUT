@@ -32,8 +32,4 @@ merge_input="false"
 # UI settings
 pbLength=20
 
-#################################################################### old trash
-extract_errors_log="extr_err.txt"   #TODO: obsolete
-scratch=$SCRATCH0   # TODO: Remove when replaced by 'SCRATCH'
-###########################################################################
 return 0
