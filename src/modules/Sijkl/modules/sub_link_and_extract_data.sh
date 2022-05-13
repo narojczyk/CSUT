@@ -66,6 +66,7 @@ if [ $anyErroros -ne 0 ]; then
     (( j++ ))
   done
 fi 
+rm *extr.log 2>> $logFile
 
 
     
