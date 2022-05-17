@@ -24,6 +24,9 @@ dataSubRepository="sph3d_NpT_HS"
 defaultBinary="SNpT"
 defaultBinaryMarker="SNpT*"
 
+# Python interpretter
+pthInterpretter="python2"
+
 # Stage 1 processing constants
 merge_input="false"
 

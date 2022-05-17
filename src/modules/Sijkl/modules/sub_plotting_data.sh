@@ -75,7 +75,7 @@ done
 if [ ! -e ./$inspectForExtreemes ]; then
   cp -s ${UTILS}/$inspectForExtreemes ./$inspectForExtreemes
 fi
-python ./$inspectForExtreemes $localResultsCatTmp > $localPlotVariables
+$pthInterpretter ./$inspectForExtreemes $localResultsCatTmp > $localPlotVariables
 source $localPlotVariables
 
 rm $localResultsCatTmp $localPlotVariables $inspectForExtreemes
