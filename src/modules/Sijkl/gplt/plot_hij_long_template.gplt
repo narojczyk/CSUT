@@ -18,8 +18,8 @@ xmin=@XRANGE_MIN@
 xmax=@XRANGE@
 
 plot[xmin:xmax] \
-datf u 1:5 t '{\tiny$h_{xy}$}' ls 1 with points,\
-datf u 1:6 t '{\tiny$h_{xz}$}' ls 2 with points,\
-datf u 1:8 t '{\tiny$h_{yz}$}' ls 3 with points
+datf u 1:5 t '{\tiny$h_{xy}$}' ls 1 with lines,\
+datf u 1:6 t '{\tiny$h_{xz}$}' ls 2 with lines,\
+datf u 1:8 t '{\tiny$h_{yz}$}' ls 3 with lines
 set output
 
