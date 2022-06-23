@@ -24,7 +24,7 @@ while [ $i -lt $TdsrN ]; do
   printf "    [%${w}d] %-7s\n" $i ${Tdsr[$i]}
   (( i++ ))
 done
-let default_subrep_id=TdsrN-2
+let default_subrep_id=TdsrN-1
 printf "   enter sub-repository index [%d]: " $default_subrep_id ; read subrep_id
 if [ ! $subrep_id ]; then
   subrep_id=$default_subrep_id
