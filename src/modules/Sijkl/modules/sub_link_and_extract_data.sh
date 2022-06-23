@@ -37,7 +37,7 @@ while [ $j -lt $data_setN ]; do
   tar -xjf $archive \
     --wildcards '*dat' \
     --wildcards '*part*' \
-    --wildcards '[md]*ini' 2> $logExtract
+    --wildcards '*.ini' 2> $logExtract
 
   if [ $? -ne 0 ]; then
     (( anyErroros++ ))
