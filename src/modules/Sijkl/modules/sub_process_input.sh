@@ -52,6 +52,10 @@ if [ ! $pressure ] || [ ! $Nlines ] || [ ! $Rlines ]; then
     $iam $R_err $binconfig
 fi
 
+# Check the number of last input file
+lastBinID=`cat $cacheInfo | grep lastBinInput |\
+  sed 's/^.*_s0*//' | sed 's/\..*//'`
+
 # Prepare config 
 template_conf=`./$binary -t`
 template_conf=${template_conf##*\ }
@@ -59,7 +63,7 @@ template_conf=${template_conf##*\ }
 cat $template_conf |\
   eval "sed -e '1s/#.*$/$input_pattern/'" |\
   sed '2s/INT/1/' |\
-  eval "sed '3s/INT/$dat_filesN/'" |\
+  eval "sed '3s/INT/$lastBinID/'" |\
   eval "sed '4s/INT/$Nlines/'" |\
   eval "sed '5s/INT/$Rlines/'" |\
   eval "sed '6s/DOUBLE/1e0/'" |\

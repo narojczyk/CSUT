@@ -43,15 +43,16 @@ while [ $j -le $dat_filesN ]; do
   # Extract only 1000 lines of data for every full data file
   csm_input=${lastFullInput/s[0-9][0-9][0-9][0-9]/s${csm}}
   csm_output=${csm_input/"full"/"gplt_part"}
-  cat $csm_input | eval sed '1,${Rlines}d' > $localTmpFile
-  eval "awk 'NR == 1 || NR % $ExtractLines == 0' $localTmpFile  > $csm_output"
-  sed -i '1d' $csm_output
-  
-  progress_bar=`$FPB $j $dat_filesN $pbLength`
-  progress_msg=`printf "$msgItemFormat" \
-    "preparing gnuplot input data (x$ExtractLines)" "$progress_bar"`
-  echo -ne "$progress_msg"\\r
+  if [ -f $csm_input ]; then
+    cat $csm_input | eval sed '1,${Rlines}d' > $localTmpFile
+    eval "awk 'NR == 1 || NR % $ExtractLines == 0' $localTmpFile  > $csm_output"
+    sed -i '1d' $csm_output
 
+    progress_bar=`$FPB $j $dat_filesN $pbLength`
+    progress_msg=`printf "$msgItemFormat" \
+      "preparing gnuplot input data (x$ExtractLines)" "$progress_bar"`
+    echo -ne "$progress_msg"\\r
+  fi
   (( j++ ))
 done
 echo
