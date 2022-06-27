@@ -97,6 +97,7 @@ cat ${GPLT}/plot_S_template.gplt |\
   eval "sed -e 's/@PL1_NAME@/${bin_stdout}/' -e 's/\.csv/_Sij\.tex/'" |\
   eval "sed 's/@PL1_TITLE@/${pl1_title}/'" |\
   eval "sed 's/@DATA_FILE@/${bin_stdout}/'"|\
+  eval "sed 's/@DATA_AVG_FILE@/${bin_stdout_av}/'"|\
   eval "sed 's/@SCEXP@/${scexp}/'"|\
   sed  's/@PL1_XLABEL@/structure\ no\./' |\
   sed  's/@PL1_YLABEL@/\$10^XXXAAA\\cdot\ S_\{ij\}\$/' |\

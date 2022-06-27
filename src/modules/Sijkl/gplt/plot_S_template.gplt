@@ -8,6 +8,7 @@ set mxtics 2
 set mytics 4
 
 datf="@DATA_FILE@"
+datg="@DATA_AVG_FILE@"
 
 #scale factor
 sc=10**@SCEXP@
@@ -21,9 +22,21 @@ set xlabel '\tiny @PL1_XLABEL@' offset 0, 0.5
 set ylabel '\tiny @PL1_YLABEL@' offset 2, 0
 set title  '\tiny @PL1_TITLE@' offset -4, 0
 set output "@PL1_NAME@"
+xmin=-5
+avgx=-2.5
 xmax=@XRANGE@
 
-plot[0:xmax] \
+plot[xmin:xmax] \
+datg u  (avgx):(sc*$5)  linestyle 11 with points,\
+datg u  (avgx):(sc*$5)  linestyle 11 with points,\
+datg u  (avgx):(sc*$7)  linestyle 22 with points,\
+datg u  (avgx):(sc*$9)  linestyle 33 with points,\
+datg u  (avgx):(sc*$11) linestyle 44 with points,\
+datg u  (avgx):(sc*$13) linestyle 55 with points,\
+datg u  (avgx):(sc*$15) linestyle 66 with points,\
+datg u  (avgx):(sc*$17) linestyle 12 with points,\
+datg u  (avgx):(sc*$19) linestyle 13 with points,\
+datg u  (avgx):(sc*$21) linestyle 23 with points,\
 datf u  1:(sc*$5)  t '{\tiny$S_{11}$}' linestyle 11 with points,\
 datf u  1:(sc*$7)  t '{\tiny$S_{22}$}' linestyle 22 with points,\
 datf u  1:(sc*$9)  t '{\tiny$S_{33}$}' linestyle 33 with points,\
