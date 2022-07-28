@@ -35,4 +35,8 @@ merge_input="false"
 # UI settings
 pbLength=20
 
+# Plot all available data
+plotWithoutExcluded=0
+excludeIDsFile=""
+
 return 0

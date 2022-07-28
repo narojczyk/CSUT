@@ -180,6 +180,19 @@ eval "sed -i 's~@PATH@~${GPLT}~' *.gplt"
 
 # Run gnuplot
 plots=(`ls -1 *gplt`)
+if [ $plotWithoutExcluded -ne 0 ]; then
+  unset plots
+  ls -1 *gplt > $localTmpFile   # WRN! overwritting any previous temp file
+  excludeGnuplIds=(`cat ${STARTDIR}/${excludeIDsFile} | sed 's/[^0-9\ ]*//g'`)
+  j=0
+  while [ $j -lt ${#excludeGnuplIds[@]} ]; do
+    exclID=`printf "%04d" ${excludeGnuplIds[$j]}`
+    eval "sed -i '/${exclID}/d' $localTmpFile"
+    (( j++ ))
+  done
+  plots=(`cat $localTmpFile`)
+  rm $localTmpFile
+fi
 Nplots=${#plots[@]}
 
 j=0

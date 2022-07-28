@@ -30,6 +30,6 @@ cacheInfo="local_cache.info"
 
 gpltMinimalX="5*10**3"
 
-startdir=$PWD   #TODO: capitalise variable name
+STARTDIR=$PWD
 
 inspectForExtreemes="inspect_for_extreemes.py"

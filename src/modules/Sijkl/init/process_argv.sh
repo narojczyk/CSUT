@@ -16,6 +16,10 @@ for i in "$@"; do
       debugMode=1
       shift 
       ;;
+    -e=*|--exclude-ids-file=*)
+      excludeIDsFile="${i#*=}"
+      plotWithoutExcluded=1
+      ;;
     -c=*|--config-file=*)
       usrConfig="${i#*=}"
       write_config

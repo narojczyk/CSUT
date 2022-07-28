@@ -4,7 +4,7 @@ write_config(){
   if [ -z ${usrConfig:+x} ] || [ "$usrConfig" == "-c" ]; then
     usrConfig="${SNAME}_default.cfg"
   fi
-  cfg="${startdir}/${usrConfig}"
+  cfg="${STARTDIR}/${usrConfig}"
 
   # Output program settings to user config file (optional)
   if [ $loadConfig -eq 0 ]; then
@@ -30,7 +30,7 @@ write_config(){
 }
 
 load_config(){
-  cfg="${startdir}/${usrConfig}"
+  cfg="${STARTDIR}/${usrConfig}"
   if [ -f $cfg ] && [ -r $cfg ]; then
     echo " Loading user settings from $cfg"
     source $cfg
