@@ -27,7 +27,7 @@ source ${INITIALS}/set_default_settings.sh
 
 # Verify that environment variables are set correctly
 source ${CORE}/init/check_environment_vars.sh\
-  ${env_dirs[@]} ${script_dirs[@]} FPB pthInterpretter
+  ${env_dirs[@]} ${script_dirs[@]} FPB
 
   # Check if the optional env. variables are set and act accordingly
   # if they are not set.
