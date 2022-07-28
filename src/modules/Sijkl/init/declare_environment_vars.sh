@@ -11,6 +11,7 @@ SNPTDIR="$CODESDIR/SNpT"
 
 #   utility programs
 FPB="$UTILS/fancypb"    #TODO: check if exists
+PYTHON="/usr/bin/python2"
 
 script_dirs=( MODULES INITIALS UTILS GPLT HELPERS SNPTDIR )
 

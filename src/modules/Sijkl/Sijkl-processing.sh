@@ -19,8 +19,15 @@ env_dirs=( SCRATCH0 CODESDIR SCRIPTDIR SIMDATA SIMPLOTS SIMRESULTS SIMREPORTS )
 # define script-wide env. variables
 source ${CORE}/init/declare_environment_vars.sh
 
+# Source constants for this scripts
+source ${INITIALS}/set_constants.sh
+
+# Source default settings for variables
+source ${INITIALS}/set_default_settings.sh
+
 # Verify that environment variables are set correctly
-source ${CORE}/init/check_environment_vars.sh ${env_dirs[@]} ${script_dirs[@]}
+source ${CORE}/init/check_environment_vars.sh\
+  ${env_dirs[@]} ${script_dirs[@]} FPB pthInterpretter
 
   # Check if the optional env. variables are set and act accordingly
   # if they are not set.
@@ -30,12 +37,6 @@ source ${CORE}/init/check_environment_vars.sh ${env_dirs[@]} ${script_dirs[@]}
     # default to primary scratch if the secondary does not exist
     export SCRATCH1="${SCRATCH0}"
   fi
-
-# Source constants for this scripts
-source ${INITIALS}/set_constants.sh
-
-# Source default settings for variables
-source ${INITIALS}/set_default_settings.sh
 
 # Source functions used during ARGV processing
 source ${INITIALS}/functions.sh
@@ -52,7 +53,7 @@ load_config
 DATAREPO="${SIMDATA}/${dataSubRepository}"
 
 # Check required resources
-source ${MODULES}/sub_resource_test.sh
+source ${CORE}/init/check_environment_vars.sh DATAREPO pthInterpretter
 
 #( test for it in the above)
 source ${UTILS}/foo_check_user_input.sh

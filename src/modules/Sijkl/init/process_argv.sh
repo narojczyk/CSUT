@@ -8,7 +8,7 @@ for i in "$@"; do
       opMode="${i#*=}"
       shift # past argument=value
       ;;
-    -s|-s=*|--settings=*)
+    -s|--settings)
       settingsOutput=1
       shift # past argument with no value
       ;;
@@ -16,15 +16,19 @@ for i in "$@"; do
       debugMode=1
       shift 
       ;;
-    -c|-c=*|--config-file=*)
+    -c=*|--config-file=*)
       usrConfig="${i#*=}"
       write_config
       exit 0
       ;;
-    -l|-l=*|--load-config-file=*)
+    -l=*|--load-config-file=*)
       usrConfig="${i#*=}"
       loadConfig=1
       shift
+      ;;
+    -h|--help)
+      echo_usage
+      exit 0
       ;;
     -*|--*)
       echo "Unknown option $i"

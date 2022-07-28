@@ -24,8 +24,8 @@ dataSubRepository="sph3d_NpT_HS"
 defaultBinary="SNpT"
 defaultBinaryMarker="SNpT*"
 
-# Python interpretter
-pthInterpretter="python2"
+# Python interpretter (default setting in declare_environment_vars.sh)
+pthInterpretter=${PYTHON}
 
 # Stage 1 processing constants
 merge_input="false"
