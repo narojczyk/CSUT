@@ -1,9 +1,9 @@
 #!/bin/bash
 # Greetings and credits
 
-header="$(tput bold)$(tput setaf 5)Utility for Sijkl calculations from MC NpT simulations in batch mode$(tput sgr0)"
-auth="$(tput setaf 2)Jakub W. Narojczyk$(tput sgr0)"
-email="$(tput setaf 2)narojczyk@ifmpan.poznan.pl$(tput sgr0)"
+header="${_BOLD}${_PURP}Utility for Sijkl calculations from MC NpT simulations in batch mode${_RESET}"
+auth="${_GREEN}Jakub W. Narojczyk${_RESET}"
+email="${_GREEN}narojczyk@ifmpan.poznan.pl${_RESET}"
 
 echo
 printf "  %s %s %s %s %s %s %s %s %s %s %s\n" $header
