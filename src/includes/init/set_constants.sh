@@ -23,13 +23,5 @@ R_failed=${msg[11]}
 # Constant settings
 today=`eval date +%F`
 
-msgItemFormat="  %-40s\t%s"
-
-cacheInfo="local_cache.info"
-# gnupltdata="merged_structure_input.csv"
-
-gpltMinimalX="5*10**3"
-
 STARTDIR=$PWD
 
-inspectForExtreemes="inspect_for_extreemes.py"
