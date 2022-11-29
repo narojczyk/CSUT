@@ -21,7 +21,7 @@ do
         i) usage_msg; exit 0;;
         h) help_msg;  exit 0;;
         c) print_config;  self_diagnostic; exit 0;;
-        u) echo "u";  exit 0;;
+        u) echo "u ${OPTARG}";  exit 0;;
         *) basic_msg; exit 1;;
     esac
 done
