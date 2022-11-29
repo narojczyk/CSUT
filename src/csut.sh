@@ -2,7 +2,7 @@
 
 ## Variables set automatically by configure.sh. ###############################
 # This should be set prior to 1st useage.
-CSUT_CORE="/home/jwn/main/work/dev/scripts/CSUT/src";
+CSUT_CORE="${HOME}/main/work/dev/scripts/CSUT/src"
 
 ###############################################################################
 

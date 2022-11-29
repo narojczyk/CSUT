@@ -14,6 +14,9 @@ parentDirName=`pwd | sed 's;^.*/;;'`
 
 if [ "${parentDirName}" = "src" ] && [ -f ${master} ]; then
   eval "sed -i 's;CSUT\_CORE=.*;CSUT\_CORE=\"${currentWorkDir}\";' ${master}"
+  if [ ${#HOME} -gt 0 ]; then
+    eval "sed -i 's;${HOME};\${HOME};' ${master}"
+  fi
   conf_msg "Finished"
   exit ${EXIT_CODE};
 elif [ ! -f ${master} ]; then
