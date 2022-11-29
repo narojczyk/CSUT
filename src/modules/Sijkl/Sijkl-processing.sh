@@ -25,7 +25,7 @@ env_dirs=( SCRATCH0 CODESDIR SCRIPTDIR SIMDATA SIMPLOTS SIMRESULTS SIMREPORTS )
 source ${CORE}/init/declare_environment_vars.sh
 
 # Source constants for this scripts
-source ${INITIALS}/set_constants.sh
+source ${CSUT_CORE_INC}/init/set_constants.sh
 
 # Source default settings for variables
 source ${INITIALS}/set_default_settings.sh
