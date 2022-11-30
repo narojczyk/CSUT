@@ -22,6 +22,15 @@ R_failed=${msg[11]}
 
 # Constant settings
 today=`eval date +%F`
+dateTime=`date +"%F_%H-%M-%S"`
 
 STARTDIR=$PWD
+
+# SQL constants
+SQL="/usr/bin/sqlite3"
+DBNAME="jobRegister.db"
+SQLTABLE="JOBS"
+DBFOLDER="${HOME}/main/work/DB"
+SQLDB="${DBFOLDER}/${DBNAME}"
+
 

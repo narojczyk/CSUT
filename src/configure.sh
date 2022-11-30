@@ -10,10 +10,11 @@ conf_msg "This will configure CSUT on new location"
 EXIT_CODE=0;
 master="csut.sh"
 module_Sijkl="modules/Sijkl/Sijkl-processing.sh"
+module_eagle_claim="modules/cluster/eagle/claim_results.sh"
 currentWorkDir=`pwd`
 parentDirName=`pwd | sed 's;^.*/;;'`
 
-updateFiles=( $master $module_Sijkl );
+updateFiles=( $master $module_Sijkl $module_eagle_claim );
 updateFilesCount=${#updateFiles[@]}
 
 if [ "${parentDirName}" = "src" ]; then
