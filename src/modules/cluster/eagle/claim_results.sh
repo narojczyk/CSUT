@@ -48,7 +48,7 @@ done
 # When enabled, test if SQL database is availiable
 if [ ${useSQL} -eq 1 ] && [ ! -f ${SQLDB} ]; then
   useSQL=0
-else
+elif [ ${useSQL} -eq 1 ] && [ -f ${SQLDB} ]; then
   printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
 fi
 
@@ -126,7 +126,8 @@ while [ $i -le $setIDend ]; do
     jobSel=(\
     `${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"`)
   else
-    jobSel=(`find ./${s}*_${n}_* -iname "JOB*finished.txt" | sort`);
+    jobSel=(`find ./${s}*_${n}_* -iname "JOB*finished.txt" |\
+      sed 's;/JOB.*;;' | sed 's;^\./;;' |  sort`);
   fi
   jobSelN=${#jobSel[@]}
   printf " %-60s\n" "Selected ${jobSelN} jobs"
@@ -224,14 +225,16 @@ while [ $i -le $setIDend ]; do
 
       (( cpyCount++ ))
     else
-      echo "missing result archive"
+      printf " ${_RED}[%s]${_RESET} %s %s\n" ${SNAME} ${R_err} "${JB} missing archive"
       (( cpyFailCount++ ))
     fi
     (( j++ ))
   done
   
   # Calculate and display averages for this set of jobs
-  source ${CORE}/utils/calculate_average_exectime.sh
+  if [ $cpyCount -gt 0 ]; then
+    source ${CORE}/utils/calculate_average_exectime.sh
+  fi
 
   (( i++ ))
 done
