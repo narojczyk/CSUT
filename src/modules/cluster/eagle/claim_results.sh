@@ -13,7 +13,8 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 
 # Script variables
 header="${_BOLD}${_PURP}Inspect directory with simulations and claim results${_RESET}"
-useSQL=1  #TODO: set this based on '-s' option
+useSQL=0
+mask="*"
 
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/colours.sh
@@ -32,6 +33,14 @@ env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
 source ${CSUT_CORE_INC}/init/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} #FPB
 
+while getopts sm: argv
+do
+    case "${argv}" in
+        s) useSQL=1 ;;
+        m) mask=${OPTARG} ;;
+    esac
+done
+
 # When enabled, test if SQL database is availiable
 if [ ${useSQL} -eq 1 ] && [ ! -f ${SQLDB} ]; then
   useSQL=0
@@ -39,13 +48,7 @@ else
   printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
 fi
 
-# TODO: change this as a parameter to '-m' option
-if [ ! $1 ]; then
-  mask="*"
-else	
-  mask=$1
-fi
-
+# Off we go
 cd ${JOBSTARTER}
 
 # Extract all the different dates
@@ -200,7 +203,7 @@ while [ $i -le $setIDend ]; do
       echo "$mcs_total" >> ${stepLog}
 
       # Mark job directory for removal
-#      mv ${JB} del_${JB}
+      mv ${JB} del_${JB}
       
       ### Log into SQL if enabled
       if [ $useSQL -eq 1 ]; then
