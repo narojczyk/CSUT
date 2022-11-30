@@ -7,7 +7,7 @@ if [ ! -f ${binavg} ]; then
   return 0
 fi
 
-echo " Calculating an average execution time per job"
+printf "\n\n Calculating an average execution time per job\n"
 cd $DEST;
 ln -s ${binavg} 2>/dev/null
 avmcs=`./average ${stepLog##/*/}`

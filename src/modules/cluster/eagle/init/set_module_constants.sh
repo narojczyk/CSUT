@@ -2,6 +2,7 @@
 
 # general constants
 FPB=${CSUT_CORE}/utils/fancypb
+VERBOSE=0
 
 # claim_results constants
 averageJobStatsLog="average_exec_time_${dateTime}.csv"

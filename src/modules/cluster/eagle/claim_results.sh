@@ -36,10 +36,11 @@ env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
 source ${CSUT_CORE_INC}/init/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
-while getopts sm: argv
+while getopts svm: argv
 do
     case "${argv}" in
         s) useSQL=1 ;;
+        v) VERBOSE=1 ;;
         m) mask=${OPTARG} ;;
     esac
 done
