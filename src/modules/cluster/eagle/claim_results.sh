@@ -32,6 +32,13 @@ env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
 source ${CSUT_CORE_INC}/init/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} #FPB
 
+# When enabled, test if SQL database is availiable
+if [ ${useSQL} -eq 1 ] && [ ! -f ${SQLDB} ]; then
+  useSQL=0
+else
+  printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
+fi
+
 # TODO: change this as a parameter to '-m' option
 if [ ! $1 ]; then
   mask="*"
@@ -194,6 +201,21 @@ while [ $i -le $setIDend ]; do
 
       # Mark job directory for removal
 #      mv ${JB} del_${JB}
+      
+      ### Log into SQL if enabled
+      if [ $useSQL -eq 1 ]; then
+      sqlUpdateStatus=5
+      sqlWatchDog=0
+        while [ ${sqlUpdateStatus} -ne 0 ] && [ $sqlWatchDog -lt 60 ]; do #TODO: set limit by constant
+          ${SQL} ${SQLDB} \
+            "UPDATE ${SQLTABLE} SET STATUS='claimed' WHERE JOBDIR LIKE '${JB}';"
+          sqlUpdateStatus=$?
+          if [ $sqlUpdateStatus -ne 0 ]; then 
+            (( sqlWatchDog++ ))
+            sleep 1
+          fi
+        done
+      fi
 
       (( cpyCount++ ))
     else
