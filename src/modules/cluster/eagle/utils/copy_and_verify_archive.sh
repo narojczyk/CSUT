@@ -46,7 +46,7 @@ fi
 
 # Verify copy operation
 sha1_tgt=`sha1sum ${tgt}/${fln} | sed 's/\ \ .*//'`
-printf "%s " ${fln} 
+printf " %s " ${fln} 
 if [ "${sha1_src}" = "${sha1_tgt}" ]; then
   sha1sum ${src}/${fln} | sed 's;/.*/;;' >> ${tgt}/checksum.sha1
   printf "%s\n" ${G_done}

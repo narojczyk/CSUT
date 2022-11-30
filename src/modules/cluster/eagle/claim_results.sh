@@ -34,7 +34,7 @@ env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
 
 # Verify that environment variables are set correctly
 source ${CSUT_CORE_INC}/init/check_environment_vars.sh\
-  ${env_dirs[@]} ${script_dirs[@]} #FPB
+  ${env_dirs[@]} ${script_dirs[@]} FPB
 
 while getopts sm: argv
 do
@@ -179,12 +179,14 @@ while [ $i -le $setIDend ]; do
     # Establish archive name
     resArchive=`ls -1 ${JB}/${s}_*_${n}_*[tb][gz][[z2] 2>/dev/null | sed 's;^.*/;;'`
     # Prepare progress bar
-    progressInfo=`printf " [ %${#jobSelN}d/${jobSelN} ] (%d/%d)" $j $cpyFailCount $cpyCount`
+    progress_bar=`$FPB $j ${jobSelN} 48`
+    progress_msg=`printf " [ %${#jobSelN}d/${jobSelN} ] CPY %${#jobSelN}d FAIL %d %s"\
+      $j $cpyCount $cpyFailCount "${progress_bar}"`
     if [ -f ${JB}/${resArchive} ]; then
       # Copy data archive to destination repository
       # syntax: Copy <file name> <source path> <target path>
       source ${CORE}/utils/copy_and_verify_archive.sh ${resArchive} ${JB} ${DEST}
-      echo -ne "${progressInfo}"\\r
+      echo -ne "${progress_msg}"\\r
 
       # Statistics: get execution time
       mm=`cat ${JB}/JOB_exec_time.txt | sed 's/^real\t//' | sed 's/m.*$//'`

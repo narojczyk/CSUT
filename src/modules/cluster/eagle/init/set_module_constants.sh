@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # general constants
+FPB=${CSUT_CORE}/utils/fancypb
 
 # claim_results constants
 averageJobStatsLog="average_exec_time_${dateTime}.csv"
