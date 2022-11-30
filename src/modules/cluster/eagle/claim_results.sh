@@ -20,6 +20,9 @@ mask="*"
 source ${CSUT_CORE_INC}/colours.sh
 source ${CSUT_CORE_INC}/init/set_constants.sh
 
+# Surce module-level utility variables
+source ${CORE}/init/set_module_constants.sh
+
 # Display greetings 
 source ${CORE}/init/credits.sh "${header}"
 
@@ -108,10 +111,6 @@ else
   echo -e "\n Nothing to do at the moment"
   exit 0
 fi
-
-averageJobStatsLog="average_exec_time_${dateTime}.csv" # TODO: move to settings file
-overwrite_target="no"  # TODO: move to settings file
-overwrite_all_targets="no" # TODO: move to settings file
 
 i=$setIDstart;    # Loop over selected sets
 while [ $i -le $setIDend ]; do
@@ -209,7 +208,7 @@ while [ $i -le $setIDend ]; do
       if [ $useSQL -eq 1 ]; then
       sqlUpdateStatus=5
       sqlWatchDog=0
-        while [ ${sqlUpdateStatus} -ne 0 ] && [ $sqlWatchDog -lt 60 ]; do #TODO: set limit by constant
+        while [ ${sqlUpdateStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
           ${SQL} ${SQLDB} \
             "UPDATE ${SQLTABLE} SET STATUS='claimed' WHERE JOBDIR LIKE '${JB}';"
           sqlUpdateStatus=$?

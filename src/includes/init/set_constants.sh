@@ -32,5 +32,5 @@ DBNAME="jobRegister.db"
 SQLTABLE="JOBS"
 DBFOLDER="${HOME}/main/work/DB"
 SQLDB="${DBFOLDER}/${DBNAME}"
-
+WD_LIMIT_SEC=60
 
