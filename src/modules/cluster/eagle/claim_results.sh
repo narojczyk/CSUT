@@ -181,7 +181,8 @@ while [ $i -le $setIDend ]; do
     # Establish archive name
     resArchive=`ls -1 ${JB}/${s}_*_${n}_*[tb][gz][[z2] 2>/dev/null | sed 's;^.*/;;'`
     # Prepare progress bar
-    progress_bar=`$FPB $j ${jobSelN} 48`
+    let jj=j+1
+    progress_bar=`$FPB ${jj} ${jobSelN} 48`
     progress_msg=`printf " [ %${#jobSelN}d/${jobSelN} ] CPY %${#jobSelN}d FAIL %d %s"\
       $j $cpyCount $cpyFailCount "${progress_bar}"`
     if [ -f ${JB}/${resArchive} ]; then
