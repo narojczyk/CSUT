@@ -11,14 +11,14 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 
 ###############################################################################
 
+# Surce top-level utility variables
+source ${CSUT_CORE_INC}/colours.sh
+source ${CSUT_CORE_INC}/init/set_constants.sh
+
 # Script variables
 header="${_BOLD}${_PURP}Inspect directory with simulations and claim results${_RESET}"
 useSQL=0
 mask="*"
-
-# Surce top-level utility variables
-source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/init/set_constants.sh
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
