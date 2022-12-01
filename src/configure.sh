@@ -11,10 +11,11 @@ EXIT_CODE=0;
 master="csut.sh"
 module_Sijkl="modules/Sijkl/Sijkl-processing.sh"
 module_eagle_claim="modules/cluster/eagle/claim_results.sh"
+module_eagle_expunge="modules/cluster/eagle/expunge_jobs.sh"
 currentWorkDir=`pwd`
 parentDirName=`pwd | sed 's;^.*/;;'`
 
-updateFiles=( $master $module_Sijkl $module_eagle_claim );
+updateFiles=( $master $module_Sijkl $module_eagle_claim $module_eagle_expunge );
 updateFilesCount=${#updateFiles[@]}
 
 if [ "${parentDirName}" = "src" ]; then
