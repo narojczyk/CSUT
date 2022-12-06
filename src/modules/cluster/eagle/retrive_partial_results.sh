@@ -18,11 +18,12 @@ source ${CSUT_CORE_INC}/init/set_constants.sh
 # Script variables
 header="${_BOLD}${_PURP}Retrive partial results from terminated simulations${_RESET}"
 useSQL=0
-logfile=`echo $0 | sed 's;^.*/;;' | sed 's;\./\(.*\)\..*;\1;'`
+logfile=`echo ${SNAME} | sed 's;^.*/;;'`
 logmarker=`eval date +%F`
 logsuffix=`date +%s`
 chksumFile="JOB_salvage_checksum.sha1"
-sawFile="script_at_work.here"
+sawFile="${SNAME}.lock"
+FPBlength=25
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
@@ -43,12 +44,11 @@ source ${CSUT_CORE_INC}/init/check_environment_vars.sh\
 log="${JOBSTARTER}/${logfile}_${logmarker}_${logsuffix}.log"
 
 # while getopts svm: argv
-while getopts sv argv
-do
-    case "${argv}" in
-        s) useSQL=1 ;;
-        v) VERBOSE=1 ;;
-    esac
+while getopts sv argv; do
+  case "${argv}" in
+    s) useSQL=1 ;;
+    v) VERBOSE=1 ;;
+  esac
 done
 
 # When enabled, test if SQL database is availiable
@@ -65,20 +65,24 @@ elif [ ${useSQL} -eq 1 ] && [ -f ${SQLDB} ]; then
   printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
 fi
 
+eval "echo \" Log info to $log\" | sed 's;${JOBSTARTER};JOBSTARTER;'"
+
 # Get list of terminated jobs
 if [ ${useSQL} -eq 1 ]; then
   TJlist=(`${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'terminated';"`);
 else
   # Get the list of jobs to retrive based on the scratch dir inspection
-  echo "not implemented yet."
+  echo " ${_RED}Usage without SQL is not yet implemented.${_RESET}"
   exit 0 
 fi
 TJCount=${#TJlist[@]}
 
 if [ $TJCount -eq 0 ]; then
-  echo " No jobs selected"
+  echo " No jobs candidates found."
   exit 0
 fi
+
+printWidth=${#TJCount}
 
 cd $JOBSTARTER; 
 
@@ -87,12 +91,11 @@ while [ $i -lt ${TJCount} ]; do
 
   job=${TJlist[$i]}
   inputFound=0;
-  unset reconfigureJob;
   
   cd $JOBSTARTER; 
-  printf "\n [%d/%d] %s\n" $(expr $i + 1) $TJCount $job
+  printf "\n [%${printWidth}d/${TJCount}] %s\n" $(expr $i + 1) $job
   echo $job >> $log
- 
+
   if [ ! -f ${job}/${sawFile} ]; then
     date > ${job}/${sawFile} 
     cd $job
@@ -148,7 +151,7 @@ while [ $i -lt ${TJCount} ]; do
     if [ $inputFound -eq 1 ]; then
       # Get list of files in current job directory to preserve
       # Consecutive masking by *.* avoids selection of binaries, 
-      #  hence overwritting links wit regular files
+      # hence overwritting links wit regular files
       preserveFiles=(`ls -1 *.* | grep -v -e JOB_ -e job.sh -e job2.sh -e configure.inf`)
       preserveFilesN=${#preserveFiles[@]}
     
@@ -165,41 +168,59 @@ while [ $i -lt ${TJCount} ]; do
       # Read list of files to copy from scratch
       salvageList=(`cat JOB_salvage_list.txt | sed 's;^.*/;;'`)
       salvageListN=${#salvageList[@]}
-      printf " * salvage %2d files, " ${salvageListN}
       if [ $salvageListN -ne 0 ]; then
         cd ${SCRATCH}/${scratchJob}
         sha1sum ${salvageList[@]} > ${chksumFile}
         cd - >/dev/null
         cp ${SCRATCH}/${scratchJob}/${chksumFile} .
 
-        q=0; printf "copying "
-        while [ $q -lt ${salvageListN} ]; do
- #         cp ${SCRATCH}/${scratchJob}/${salvageList[$q]} .
+        printFormBar=" copying data from SCRATCH (%${#salvageListN}d/${salvageListN}) %s"
+        q=0; while [ $q -lt ${salvageListN} ]; do
+          cp ${SCRATCH}/${scratchJob}/${salvageList[$q]} .
           (( q++ ))
-          printf "."
+          progress_bar=`$FPB ${q} ${salvageListN} ${FPBlength}`
+          progress_msg=`printf "${printFormBar}" $q "${progress_bar}"`
+          # Display progress bar
+          echo -ne "${progress_msg}"\\r
         done
         unset q
 
         # Verify that files were copied correctly
-        printf "\n * sha1 "
-        sha1sum -c ${chksumFile} --quiet 2>> $log
+        printf "\n Verify copied data "
+        sha1sum -c ${chksumFile} --quiet >> $log 2>&1
         shaEC=$?
         if [ $shaEC -eq 0 ]; then
+          # Flag job as reconfigured
+          if [ ${useSQL} -ne 0 ]; then
+            sqlUpdateStatus=5
+            sqlWatchDog=0
+            while [ ${sqlUpdateStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
+              ${SQL} ${SQLDB} "UPDATE ${SQLTABLE} SET STATUS='reconfigured' WHERE JOBDIR LIKE '${job}' ;"
+              sqlUpdateStatus=$?
+              if [ $sqlUpdateStatus -ne 0 ]; then
+                (( sqlWatchDog++ ))
+                sleep 1
+              fi
+            done
+          else
+            echo " ${job} RECONFIGURED" >> $log
+          fi
+
           # Salvage copied with no errors. Proceed with job configuration
-          printf "[ OK ] "
-          reconfigureJob=1
+          printf "${G_ok}"
+
         else
-          printf "[ failed ] "
+          printf "${R_failed}"
           echo " Salvage files corruped. Job reconfiguration interupted." >> $log
         fi
 
       else
-        echo " nothing to do"
+        echo " No previous results to salvage" 
         echo " No previous results to salvage" >> $log
       fi
     
     else
-      echo " No previous jobs to salvage"
+      echo " No new files to retrive"
     fi
 
     rm ${sawFile}  # remove warning sign
@@ -209,6 +230,5 @@ while [ $i -lt ${TJCount} ]; do
 
   (( i++ ))
 done
-echo " Finished"
-
+echo
 exit 0
