@@ -29,6 +29,7 @@ STARTDIR=$PWD
 # SQL constants
 SQL="/usr/bin/sqlite3"
 DBNAME="jobRegister.db"
+#DBNAME="jobRegister_test.db"
 SQLTABLE="JOBS"
 DBFOLDER="${HOME}/main/work/DB"
 SQLDB="${DBFOLDER}/${DBNAME}"

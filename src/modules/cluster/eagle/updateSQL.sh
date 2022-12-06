@@ -161,7 +161,7 @@ if [ $deadJBsCount -ne 0 ]; then
       # Prepare progress bar
       progress_bar=`$FPB ${i} ${deadJBsCount} ${FPBlength}`
       progress_msg=`printf "${printFormBar}"\
-        "Inspecting terminated jobs" ${i} ${deadJBsCount} "${progress_bar}"`
+        "Checking terminated jobs" ${i} ${deadJBsCount} "${progress_bar}"`
       # Display progress bar
       echo -ne "${progress_msg}"\\r
     fi
