@@ -86,7 +86,7 @@ printWidth=${#TJCount}
 
 cd $JOBSTARTER; 
 
-i=0; TJCount=1
+i=0; 
 while [ $i -lt ${TJCount} ]; do
 
   job=${TJlist[$i]}
