@@ -136,7 +136,8 @@ else
     # Display progress bar
     echo -ne "${progress_msg}"\\r
   done
-
+  
+  cd ${SCRATCH}
   # Directories left in log can be removed
   jobsToExpire=(`cat $log | grep SLID`)
   
@@ -164,7 +165,7 @@ if [ "${userConfirm}" == "y" ] || [ "${userConfirm}" == "Y" ]; then
         ${SQL} ${SQLDB} \
           "UPDATE ${SQLTABLE} SET SCRATCHDIR='' WHERE JOBDIR LIKE '${JBtoExp#SLID[0-9]*_}';"
       fi
-    else
+    # else
       # TODO: log that dir not found
     fi
     (( i++ ))
