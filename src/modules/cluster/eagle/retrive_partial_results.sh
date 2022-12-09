@@ -73,7 +73,12 @@ if [ ${useSQL} -eq 1 ]; then
 else
   # Get the list of jobs to retrive based on the scratch dir inspection
   echo " ${_RED}Usage without SQL is not yet implemented.${_RESET}"
-  exit 0 
+  if [ ! $1 ]; then 
+    echo " ${_RED}Pass the list of jobs to retrive as command line arguments${_RESET}"
+    exit 1
+  else
+    TJlist=( "$@" )
+  fi
 fi
 TJCount=${#TJlist[@]}
 
