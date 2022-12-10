@@ -59,7 +59,7 @@ load_config
 DATAREPO="${SIMDATA}/${dataSubRepository}"
 
 # Check required resources
-source ${CORE}/init/check_environment_vars.sh DATAREPO pthInterpretter
+source ${CSUT_CORE_INC}/settings/check_environment_vars.sh DATAREPO pthInterpretter
 
 #( test for it in the above)
 source ${UTILS}/foo_check_user_input.sh
