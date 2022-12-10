@@ -114,8 +114,8 @@ i=0; while [ $i -lt ${jobSelArchiveN} ]; do
   fi
 
   if [ -d ${JB} ]; then
-    # Clean directory before archiving
-    rm ${JB}/JOB_* ${JB}/2*.[bt][zg][z2]
+    # Clean directory before archiving0
+    rm ${JB}/JOB_* ${JB}/2*.[bt][zg][z2] ${JB}/*.chkp* ${JB}/*.part* ${JB}/*.msnap* 2>/dev/null
     # Archive job
     tar cjf ${JB}.bz2 ${JB}
     # Remove job directory
