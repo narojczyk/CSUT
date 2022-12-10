@@ -32,7 +32,7 @@ source ${CORE}/init/set_module_constants.sh
 while getopts v argv
 do
     case "${argv}" in
-        v) VERBOSE=1 ;;
+        v) VERBOSE=0 ;;
     esac
 done
 

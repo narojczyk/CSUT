@@ -39,7 +39,7 @@ while getopts svm: argv
 do
     case "${argv}" in
         s) useSQL=1 ;;
-        v) VERBOSE=1 ;;
+        v) VERBOSE=0 ;;
         m) mask=${OPTARG} ;;
     esac
 done

@@ -4,7 +4,7 @@
 #   directories
 MODULES="$CORE/modules"
 INITIALS="$CORE/init"
-UTILS="$CORE/utils"
+UTILS="${CSUT_CORE_INC}/utils"
 GPLT="$CORE/gplt"
 HELPERS="$CORE/helper_scripts"
 SNPTDIR="$CODESDIR/SNpT"

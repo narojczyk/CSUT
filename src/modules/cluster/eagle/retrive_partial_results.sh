@@ -46,7 +46,7 @@ log="${JOBSTARTER}/${logfile}_${logmarker}_${logsuffix}.log"
 while getopts sv argv; do
   case "${argv}" in
     s) useSQL=1 ;;
-    v) VERBOSE=1 ;;
+    v) VERBOSE=0 ;;
   esac
 done
 

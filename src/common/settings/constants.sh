@@ -38,6 +38,9 @@ dateTime=`date +"%F_%H-%M-%S"`
 
 STARTDIR=$PWD
 
+# Defaults
+VERBOSE=1
+
 # SQL constants
 SQL="/usr/bin/sqlite3"
 DBNAME="jobRegister.db"
@@ -46,4 +49,7 @@ SQLTABLE="JOBS"
 DBFOLDER="${HOME}/main/work/DB"
 SQLDB="${DBFOLDER}/${DBNAME}"
 WD_LIMIT_SEC=60
+
+# FPB settings
+FPB=${CSUT_CORE_INC}/utils/fancypb
 
