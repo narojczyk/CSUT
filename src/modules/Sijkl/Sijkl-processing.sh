@@ -7,14 +7,14 @@ iam=$SNAME  #TODO: remove 'iam'
 ## Variables set automatically by configure.sh. ###############################
 # This should be set prior to 1st useage.
 CSUT_CORE="${HOME}/main/work/dev/scripts/CSUT/src"
-CSUT_CORE_INC="${CSUT_CORE}/includes"
+CSUT_CORE_INC="${CSUT_CORE}/common"
 CORE="${CSUT_CORE}/modules/Sijkl"
 
 ###############################################################################
 
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/init/set_constants.sh
+source ${CSUT_CORE_INC}/settings/set_constants.sh
 
 # Display greetings and define output messages
 source ${CORE}/init/credits.sh
@@ -32,7 +32,7 @@ source ${CORE}/init/set_module_constants.sh
 source ${INITIALS}/set_default_settings.sh
 
 # Verify that environment variables are set correctly
-source ${CSUT_CORE_INC}/init/check_environment_vars.sh\
+source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
   # Check if the optional env. variables are set and act accordingly
