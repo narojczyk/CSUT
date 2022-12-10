@@ -14,14 +14,24 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Display greetings
-source ${CSUT_CORE_INC}/header.sh \
-  "${_BLD}${_PRP}Inspect directory with simulations and erase old jobs${_RST}"
+# Surce top-level utility variables
+source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
 useSQL=0
 sqlAware=1
-# mask="*"
+
+while getopts sv argv
+do
+    case "${argv}" in
+        s) useSQL=1 ;;
+        v) VERBOSE=0 ;;
+    esac
+done
+
+# Display greetings
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Inspect directory with simulations and erase old jobs${_RST}"
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
@@ -36,33 +46,12 @@ env_dirs=( JOBSTARTER DBFOLDER )
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
-# while getopts svm: argv
-while getopts sv argv
-do
-    case "${argv}" in
-        s) useSQL=1 ;;
-        v) VERBOSE=0 ;;
-    esac
-done
-
 # When enabled, test if SQL database is availiable
-if [ ${useSQL} -eq 1 ] || [ ${sqlAware} -eq 1 ]; then
-  if [[ `uname -n` = "eagle.man.poznan.pl" ]]; then
-    useSQL=0
-    sqlAware=0
-    echo " ${_RED}Cannot use SQL funcionality at the head node${_RST}"
-    printf " run:\n\tsrun -pstandard --pty /bin/bash\n"
-    printf " or continue in non-SQL mode"; read trash
-  fi
-fi
-if [ ${useSQL} -eq 1 ] && [ ! -f ${SQLDB} ]; then
-  useSQL=0
-  sqlAware=0
-elif [ ${useSQL} -eq 0 ] && [ ! -f ${SQLDB} ]; then
-  sqlAware=0
-elif [ ${useSQL} -eq 1 ] && [ -f ${SQLDB} ]; then
-  printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
-fi
+SQLtestHostname
+
+# Test if DB is present
+SQLDBpresent
+sqlAware=1 #TODO this is temporary hack
 
 # Off we go
 cd ${JOBSTARTER}
@@ -76,8 +65,8 @@ if [ ${useSQL} -eq 1 ]; then
     `${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE (STATUS LIKE 'claimed' AND JOBDIR NOT LIKE '%_001' );" | sed 's/^/del_/' |\
      sort -u` )
 else
-  jobSelArchive=(`ls -1d del_20??-${mask}*_001`)
-  jobSelDelete=(`ls -1d del_20??-${mask}*_[0-9][0-9][0-9] | grep -v "_001$"`)
+  jobSelArchive=(`ls -1d del_20??-${mask}*_001 2> /dev/null`)
+  jobSelDelete=(`ls -1d del_20??-${mask}*_[0-9][0-9][0-9] 2>/dev/null | grep -v "_001$"`)
 fi
 jobSelArchiveN=${#jobSelArchive[@]}
 jobSelDeleteN=${#jobSelDelete[@]}

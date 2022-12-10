@@ -42,6 +42,8 @@ STARTDIR=$PWD
 VERBOSE=1
 
 # SQL constants
+continueWithoutSQL=0
+SQLavailStrictMode=0
 SQL="/usr/bin/sqlite3"
 DBNAME="jobRegister.db"
 #DBNAME="jobRegister_test.db"

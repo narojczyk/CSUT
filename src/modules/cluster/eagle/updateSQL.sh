@@ -14,6 +14,16 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
+# Surce top-level utility variables
+source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
+
+while getopts v argv
+do
+    case "${argv}" in
+        v) VERBOSE=0 ;;
+    esac
+done
+
 # Display greetings
 source ${CSUT_CORE_INC}/header.sh \
   "${_BLD}${_PRP}Sync information about running jobs with SQL${_RST}"
@@ -29,13 +39,6 @@ liveLog="active_jobs.txt"
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
 
-while getopts v argv
-do
-    case "${argv}" in
-        v) VERBOSE=0 ;;
-    esac
-done
-
 # define script-wide env. variables
 source ${CORE}/init/declare_environment_vars.sh
 
@@ -47,14 +50,11 @@ source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
 # When enabled, test if SQL database is availiable
-if [ ${useSQL} -eq 1 ] && [[ `uname -n` = "eagle.man.poznan.pl" ]]; then
-  echo " ${_RED}SQL funcionality required, cannot run on the head node${_RST}"
-  exit 1
-fi
+SQLavailStrictMode=1
+SQLtestHostname
 
-if [ $VERBOSE -eq 1 ]; then
-  printf " Using %s\n" ${SQLDB##/*/}
-fi
+# Test if DB is present
+SQLDBpresent
 
 # Off we go
 cd ${SCRATCH}

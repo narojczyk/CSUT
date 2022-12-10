@@ -14,9 +14,8 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Display greetings
-source ${CSUT_CORE_INC}/header.sh \
-  "${_BLD}${_PRP}Retrive partial results from terminated simulations${_RST}"
+# Surce top-level utility variables
+source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
 useSQL=0
@@ -26,6 +25,17 @@ logsuffix=`date +%s`
 chksumFile="JOB_salvage_checksum.sha1"
 sawFile="${SNAME}.lock"
 FPBlength=25
+
+while getopts sv argv; do
+  case "${argv}" in
+    s) useSQL=1 ;;
+    v) VERBOSE=0 ;;
+  esac
+done
+
+# Display greetings
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Retrive partial results from terminated simulations${_RST}"
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
@@ -42,27 +52,11 @@ source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
 
 log="${JOBSTARTER}/${logfile}_${logmarker}_${logsuffix}.log"
 
-# while getopts svm: argv
-while getopts sv argv; do
-  case "${argv}" in
-    s) useSQL=1 ;;
-    v) VERBOSE=0 ;;
-  esac
-done
-
 # When enabled, test if SQL database is availiable
-if [ ${useSQL} -eq 1 ] && [[ `uname -n` = "eagle.man.poznan.pl" ]]; then
-    useSQL=0
-    echo " ${_RED}Cannot use SQL funcionality at the head node${_RST}"
-    printf " run:\n\tsrun -pstandard --pty /bin/bash\n"
-    printf " or continue in non-SQL mode"; read trash
-fi
+SQLtestHostname
 
-if [ ${useSQL} -eq 1 ] && [ ! -f ${SQLDB} ]; then
-  useSQL=0
-elif [ ${useSQL} -eq 1 ] && [ -f ${SQLDB} ]; then
-  printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
-fi
+# Test if DB is present
+SQLDBpresent
 
 eval "echo \" Log info to $log\" | sed 's;${JOBSTARTER};JOBSTARTER;'"
 

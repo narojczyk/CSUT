@@ -14,13 +14,25 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Display greetings
-source ${CSUT_CORE_INC}/header.sh \
-  "${_BLD}${_PRP}Inspect directory with simulations and claim results${_RST}"
+# Surce top-level utility variables
+source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
 useSQL=0
 mask="*"
+
+while getopts svm: argv
+do
+    case "${argv}" in
+        s) useSQL=1 ;;
+        v) VERBOSE=0 ;;
+        m) mask=${OPTARG} ;;
+    esac
+done
+
+# Display greetings
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Inspect directory with simulations and claim results${_RST}"
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
@@ -35,21 +47,11 @@ env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
-while getopts svm: argv
-do
-    case "${argv}" in
-        s) useSQL=1 ;;
-        v) VERBOSE=0 ;;
-        m) mask=${OPTARG} ;;
-    esac
-done
-
 # When enabled, test if SQL database is availiable
-if [ ${useSQL} -eq 1 ] && [ ! -f ${SQLDB} ]; then
-  useSQL=0
-elif [ ${useSQL} -eq 1 ] && [ -f ${SQLDB} ]; then
-  printf " Running with SQL enabled. Using %s\n" ${SQLDB##/*/}
-fi
+SQLtestHostname
+
+# Test if DB is present
+SQLDBpresent
 
 # Off we go
 cd ${JOBSTARTER}
