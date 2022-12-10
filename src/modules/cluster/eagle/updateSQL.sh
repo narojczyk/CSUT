@@ -273,8 +273,8 @@ if [ $ghsJBsCount -ne 0 ]; then
   i=0; while [ $i -lt $ghsJBsCount ]; do
     ghsJB=${ghsJBs[$i]}
     # Update SQL record
-    ${SQL} ${SQLDB} \
-      "UPDATE ${SQLTABLE} SET STATUS='ghost' WHERE JOBDIR LIKE '${ghsJB}';"
+#    ${SQL} ${SQLDB} \
+#      "UPDATE ${SQLTABLE} SET STATUS='ghost' WHERE JOBDIR LIKE '${ghsJB}';"
     (( i++ ))
 
     if [ $VERBOSE -eq 1 ]; then
