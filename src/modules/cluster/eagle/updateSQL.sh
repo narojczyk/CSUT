@@ -14,8 +14,12 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
+# Display greetings
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Sync information about running jobs with SQL${_RST}"
+
+
 # Script variables
-header="${_BLD}${_PRP}Sync information about running jobs with SQL${_RST}"
 useSQL=1
 scrLog="scratch.log"
 sqlLog="sqlRecords.txt"
@@ -31,11 +35,6 @@ do
         v) VERBOSE=1 ;;
     esac
 done
-
-# Display greetings
-if [ $VERBOSE -eq 1 ]; then
-  source ${CORE}/init/credits.sh "${header}"
-fi
 
 # define script-wide env. variables
 source ${CORE}/init/declare_environment_vars.sh

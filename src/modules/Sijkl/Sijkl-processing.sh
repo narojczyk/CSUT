@@ -16,7 +16,8 @@ CORE="${CSUT_CORE}/modules/Sijkl"
 source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Display greetings and define output messages
-source ${CORE}/init/credits.sh
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Utility for Sijkl calculations from MC NpT simulations in batch mode${_RST}"
 
 # get names of system-wide env. variables
 env_dirs=( SCRATCH0 CODESDIR SCRIPTDIR SIMDATA SIMPLOTS SIMRESULTS SIMREPORTS )

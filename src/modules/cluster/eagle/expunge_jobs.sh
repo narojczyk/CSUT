@@ -14,17 +14,17 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
+# Display greetings
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Inspect directory with simulations and erase old jobs${_RST}"
+
 # Script variables
-header="${_BLD}${_PRP}Inspect directory with simulations and erase old jobs${_RST}"
 useSQL=0
 sqlAware=1
 # mask="*"
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
-
-# Display greetings
-source ${CORE}/init/credits.sh "${header}"
 
 # define script-wide env. variables
 source ${CORE}/init/declare_environment_vars.sh

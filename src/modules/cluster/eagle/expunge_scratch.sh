@@ -14,8 +14,11 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
+# Display greetings
+source ${CSUT_CORE_INC}/header.sh \
+  "${_BLD}${_PRP}Inspect SCRATCH directory and erase old jobs${_RST}"
+
 # Script variables
-header="${_BLD}${_PRP}Inspect SCRATCH directory and erase old jobs${_RST}"
 useSQL=0
 # mask="*"
 logfile=`echo ${SNAME} | sed 's;^.*/;;'`
@@ -25,9 +28,6 @@ FPBlength=30
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
-
-# Display greetings
-source ${CORE}/init/credits.sh "${header}"
 
 # define script-wide env. variables
 source ${CORE}/init/declare_environment_vars.sh
