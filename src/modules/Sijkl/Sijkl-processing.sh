@@ -13,8 +13,7 @@ CORE="${CSUT_CORE}/modules/Sijkl"
 ###############################################################################
 
 # Surce top-level utility variables
-source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/settings/set_constants.sh
+source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Display greetings and define output messages
 source ${CORE}/init/credits.sh

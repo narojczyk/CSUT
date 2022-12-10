@@ -2,8 +2,8 @@
 # Greetings and credits
 
 header="$1"
-auth="${_GREEN}Jakub W. Narojczyk${_RESET}"
-email="${_GREEN}narojczyk@ifmpan.poznan.pl${_RESET}"
+auth="${_GRE}Jakub W. Narojczyk${_RST}"
+email="${_GRE}narojczyk@ifmpan.poznan.pl${_RST}"
 
 echo
 printf "  %s\n" "$header"

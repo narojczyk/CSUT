@@ -12,11 +12,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 ###############################################################################
 
 # Surce top-level utility variables
-source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/settings/set_constants.sh
+source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Script variables
-header="${_BOLD}${_PURP}Sync information about running jobs with SQL${_RESET}"
+header="${_BLD}${_PRP}Sync information about running jobs with SQL${_RST}"
 useSQL=1
 scrLog="scratch.log"
 sqlLog="sqlRecords.txt"
@@ -50,7 +49,7 @@ source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
 
 # When enabled, test if SQL database is availiable
 if [ ${useSQL} -eq 1 ] && [[ `uname -n` = "eagle.man.poznan.pl" ]]; then
-  echo " ${_RED}SQL funcionality required, cannot run on the head node${_RESET}"
+  echo " ${_RED}SQL funcionality required, cannot run on the head node${_RST}"
   exit 1
 fi
 

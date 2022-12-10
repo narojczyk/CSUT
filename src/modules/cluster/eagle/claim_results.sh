@@ -12,11 +12,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 ###############################################################################
 
 # Surce top-level utility variables
-source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/settings/set_constants.sh
+source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Script variables
-header="${_BOLD}${_PURP}Inspect directory with simulations and claim results${_RESET}"
+header="${_BLD}${_PRP}Inspect directory with simulations and claim results${_RST}"
 useSQL=0
 mask="*"
 
@@ -226,7 +225,7 @@ while [ $i -le $setIDend ]; do
 
       (( cpyCount++ ))
     else
-      printf " ${_RED}[%s]${_RESET} %s %s\n" ${SNAME} ${R_err} "${JB} missing archive"
+      printf " ${_RED}[%s]${_RST} %s %s\n" ${SNAME} ${R_err} "${JB} missing archive"
       (( cpyFailCount++ ))
     fi
     (( j++ ))

@@ -12,11 +12,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 ###############################################################################
 
 # Surce top-level utility variables
-source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/settings/set_constants.sh
+source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Script variables
-header="${_BOLD}${_PURP}Retrive partial results from terminated simulations${_RESET}"
+header="${_BLD}${_PRP}Retrive partial results from terminated simulations${_RST}"
 useSQL=0
 logfile=`echo ${SNAME} | sed 's;^.*/;;'`
 logmarker=`eval date +%F`
@@ -54,7 +53,7 @@ done
 # When enabled, test if SQL database is availiable
 if [ ${useSQL} -eq 1 ] && [[ `uname -n` = "eagle.man.poznan.pl" ]]; then
     useSQL=0
-    echo " ${_RED}Cannot use SQL funcionality at the head node${_RESET}"
+    echo " ${_RED}Cannot use SQL funcionality at the head node${_RST}"
     printf " run:\n\tsrun -pstandard --pty /bin/bash\n"
     printf " or continue in non-SQL mode"; read trash
 fi
@@ -72,9 +71,9 @@ if [ ${useSQL} -eq 1 ]; then
   TJlist=(`${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'terminated';"`);
 else
   # Get the list of jobs to retrive based on the scratch dir inspection
-  echo " ${_RED}Usage without SQL is not yet implemented.${_RESET}"
+  echo " ${_RED}Usage without SQL is not yet implemented.${_RST}"
   if [ ! $1 ]; then 
-    echo " ${_RED}Pass the list of jobs to retrive as command line arguments${_RESET}"
+    echo " ${_RED}Pass the list of jobs to retrive as command line arguments${_RST}"
     exit 1
   else
     TJlist=( "$@" )

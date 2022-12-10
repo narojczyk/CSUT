@@ -12,11 +12,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 ###############################################################################
 
 # Surce top-level utility variables
-source ${CSUT_CORE_INC}/colours.sh
-source ${CSUT_CORE_INC}/settings/set_constants.sh
+source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Script variables
-header="${_BOLD}${_PURP}Inspect SCRATCH directory and erase old jobs${_RESET}"
+header="${_BLD}${_PRP}Inspect SCRATCH directory and erase old jobs${_RST}"
 useSQL=0
 # mask="*"
 logfile=`echo ${SNAME} | sed 's;^.*/;;'`
@@ -53,7 +52,7 @@ done
 if [ ${useSQL} -eq 1 ]; then
   if [[ `uname -n` = "eagle.man.poznan.pl" ]]; then
     useSQL=0
-    echo " ${_RED}Cannot use SQL funcionality at the head node${_RESET}"
+    echo " ${_RED}Cannot use SQL funcionality at the head node${_RST}"
     printf " run:\n\tsrun -pstandard --pty /bin/bash\n"
     printf " or continue in non-SQL mode"; read trash
   fi
