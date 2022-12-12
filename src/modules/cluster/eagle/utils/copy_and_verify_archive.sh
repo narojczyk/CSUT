@@ -47,15 +47,15 @@ fi
 # Verify copy operation
 sha1_tgt=`sha1sum ${tgt}/${fln} | sed 's/\ \ .*//'`
 if [ $VERBOSE -ne 0 ]; then
-  printf " %s " ${fln}
+  printf " %s " ${fln} >> $log
 fi
 if [ "${sha1_src}" = "${sha1_tgt}" ]; then
   sha1sum ${src}/${fln} | sed 's;/.*/;;' >> ${tgt}/checksum.sha1
   if [ $VERBOSE -ne 0 ]; then
-    printf "%s\n" ${G_done}
+    printf "OK\n" >> $log
   fi
 else
-  printf "%s\n" ${R_failed}
+  printf "FAILED\n" >> $log
   printf "[%s] %s Copy failed. Archive's SHA1 checksum do not match.\n" ${iam} ${R_err}
   exit 1
 fi

@@ -21,7 +21,6 @@ source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
-useSQL=0
 mask="*"
 
 while getopts svm: argv
@@ -59,6 +58,11 @@ SQLDBpresent
 # Off we go
 cd ${JOBSTARTER}
 
+log="${JOBSTARTER}/${logFileName}"
+if [ ${VERBOSE} -eq 1 ]; then
+  echo " Log to file: ${_YEL}${_BLD}${logFileName}${_RST} on JOBSTARTER"
+fi
+
 # Extract all the different dates
 if [ ${useSQL} -eq 1 ]; then
   sets=(`${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'finished';" |\
@@ -81,8 +85,6 @@ if [ $fail_count -ne 0 ]; then
 fi
 echo " $fin_count marked as completed"
 
-
- # subsets=(`ls -1d ${CS}* | grep -v "\." | sed 's/^.*_\([0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)_.*/\1/' |sort -u`)
 # Present job sets to inspect or bail out if nothing to do
 if [ $fin_count -gt 0 ]; then
   echo -e "\n List of job sets to inspect:"
@@ -92,7 +94,8 @@ if [ $fin_count -gt 0 ]; then
     n=`echo ${sets[$j]} | cut -d '_' -f 2` # N-particles signature
     if [ $useSQL -eq 1 ]; then
       jobsInSet=`${SQL} ${SQLDB} "SELECT COUNT(ID) FROM JOBS WHERE JOBDIR LIKE '${s}%_${n}_%';"`
-setFinCount=`${SQL} ${SQLDB} "SELECT COUNT(ID) FROM JOBS WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"`
+      setFinCount=`${SQL} ${SQLDB} \
+        "SELECT COUNT(ID) FROM JOBS WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"`
     else
       jobsInSet=`ls -1d ${s}*_${n}_* | wc -l`
       setFinCount=`ls -1d ${s}*_${n}_*/*finished* 2>/dev/null | wc -l`
