@@ -14,7 +14,7 @@ avmcs=`./average ${stepLog##/*/}`
 avtime=`./average ${timeLog##/*/}`
 echo "Average calculation time: ${avtime} min."      > $averageJobStatsLog
 echo "Average MC steps: ${avmcs}"                   >> $averageJobStatsLog
-echo "Samples taken: `cat job_mc_steps.csv| wc -l`" >> $averageJobStatsLog
+echo "Samples taken: `cat ${stepFileName} | wc -l`" >> $averageJobStatsLog
 cat $averageJobStatsLog | sed 's/^/\t/'
 
 # Return to job directory for the next set

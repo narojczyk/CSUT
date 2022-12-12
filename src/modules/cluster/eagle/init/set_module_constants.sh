@@ -12,6 +12,9 @@ lockFile="${SNAME}.lock"
 
 # claim_results constants
 averageJobStatsLog="average_exec_time_${dateTime}.csv"
+timeFileName="job_execution_times.csv"
+stepFileName="job_mc_steps.csv"
+JBexecTime="JOB_exec_time.txt"
 overwrite_target="no"
 overwrite_all_targets="no"
 

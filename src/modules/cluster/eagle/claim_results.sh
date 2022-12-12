@@ -176,8 +176,8 @@ while [ $i -le $setIDend ]; do
   printf " Store simulation data in: \$SIMDATA/%s\n" "${REPOSITORY}/${SUBREPO}"
   
   # Remove old logs
-  timeLog=$DEST/job_execution_times.csv
-  stepLog=$DEST/job_mc_steps.csv
+  timeLog=$DEST/${timeFileName}
+  stepLog=$DEST/${stepFileName}
   if [ -f ${timeLog} ]; then 
     rm ${timeLog}
   fi
@@ -200,8 +200,8 @@ while [ $i -le $setIDend ]; do
       source ${CORE}/utils/copy_and_verify_archive.sh ${resArchive} ${JB} ${DEST}
 
       # Statistics: get execution time
-      mm=`cat ${JB}/JOB_exec_time.txt | sed 's/^real\t//' | sed 's/m.*$//'`
-      ss=`cat ${JB}/JOB_exec_time.txt | sed 's/^real.*m//'| sed 's/\..*$//'`
+      mm=`cat ${JB}/${JBexecTime} | sed 's/^real\t//' | sed 's/m.*$//'`
+      ss=`cat ${JB}/${JBexecTime} | sed 's/^real.*m//'| sed 's/\..*$//'`
       echo -n "$mm" >> ${timeLog}
       echo "scale=3; ${ss}.09/60.0" |bc >> ${timeLog}
 
