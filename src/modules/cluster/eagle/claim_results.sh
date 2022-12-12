@@ -14,7 +14,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Surce top-level utility variables
+# Surce top-level IO functions
+source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
+
+# Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
@@ -114,6 +117,10 @@ else
   exit 0
 fi
 
+# Set initial control array for printing progress bar (see IOfunctions)
+dpctrl=( 0 0 76 ' ' )
+
+
 i=$setIDstart;    # Loop over selected sets
 while [ $i -le $setIDend ]; do
 
@@ -132,6 +139,8 @@ while [ $i -le $setIDend ]; do
   fi
   jobSelN=${#jobSel[@]}
   printf " %-60s\n" "Selected ${jobSelN} jobs"
+
+  printFormBar=" [ %${#jobSelN}d/${jobSelN} ] CPY %${#jobSelN}d FAIL %d"
   
   # Skip the rest of thie loop iteration if smoehow no jobs are found
   if [ ${jobSelN} -eq 0 ]; then
@@ -176,21 +185,16 @@ while [ $i -le $setIDend ]; do
   # Loop over job directories and copy results to the repository
   cpyCount=0
   cpyFailCount=0
+  dpctrl[1]=${jobSelN}
   j=0; while [ $j -lt ${jobSelN} ]; do
     # Select job directory
     JB=${jobSel[$j]}
     # Establish archive name
     resArchive=`ls -1 ${JB}/${s}_*_${n}_*[tb][gz][[z2] 2>/dev/null | sed 's;^.*/;;'`
-    # Prepare progress bar
-    let jj=j+1
-    progress_bar=`$FPB ${jj} ${jobSelN} 48`
-    progress_msg=`printf " [ %${#jobSelN}d/${jobSelN} ] CPY %${#jobSelN}d FAIL %d %s"\
-      $j $cpyCount $cpyFailCount "${progress_bar}"`
     if [ -f ${JB}/${resArchive} ]; then
       # Copy data archive to destination repository
       # syntax: Copy <file name> <source path> <target path>
       source ${CORE}/utils/copy_and_verify_archive.sh ${resArchive} ${JB} ${DEST}
-      echo -ne "${progress_msg}"\\r
 
       # Statistics: get execution time
       mm=`cat ${JB}/JOB_exec_time.txt | sed 's/^real\t//' | sed 's/m.*$//'`
@@ -231,6 +235,9 @@ while [ $i -le $setIDend ]; do
       (( cpyFailCount++ ))
     fi
     (( j++ ))
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" $j $cpyCount $cpyFailCount`
+    display_progres
   done
   
   # Calculate and display averages for this set of jobs

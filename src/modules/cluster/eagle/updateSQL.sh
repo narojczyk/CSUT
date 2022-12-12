@@ -14,7 +14,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Surce top-level utility variables
+# Surce top-level IO functions
+source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
+
+# Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 while getopts v argv
@@ -98,23 +101,23 @@ if [ $VERBOSE -eq 1 ]; then
     printWidth=${#srcJBsCount}
   fi
   printForm=" %-55s : %${printWidth}d\n"
-  printFormBar=" %-24s (%${printWidth}d/%${printWidth}d) %s"
+  printFormBar=" %-24s (%${printWidth}d/%${printWidth}d)"
   let FPBlength=22-printWidth-printWidth+2
+
+  # Set initial control array for printing progress bar (see IOfunctions)
+  dpctrl=( 0 0 66 ' ' )
 fi
 
 
 # Generate the lists of active and dead jobs
+dpctrl[1]=${jobIDsN}
 i=0; while [ $i -lt ${jobIDsN} ]; do
   eval "sed -i '/${jobIDs[$i]}/d' ${deadLog}"
   cat ${scrLog} | grep ${jobIDs[$i]} >> ${liveLog}
   (( i++ ))
-  if [ $VERBOSE -eq 1 ]; then
-    progress_bar=`$FPB ${i} ${jobIDsN} ${FPBlength}`
-    progress_msg=`printf "${printFormBar}" \
-      "Reading SCRATCH contents" $i ${jobIDsN} "${progress_bar}"`
-    # Display progress bar
-    echo -ne "${progress_msg}"\\r
-  fi
+  dpctrl[0]=${i}
+  dpctrl[3]=`printf "${printFormBar}" "Reading SCRATCH contents" ${i} ${jobIDsN}`
+  display_progres
 done
 
 if [ $VERBOSE -eq 1 ]; then
@@ -130,6 +133,7 @@ notFoundInSQL=0
 # let FPBlength=45-w-w+2
 
 if [ $deadJBsCount -ne 0 ]; then
+  dpctrl[1]=${deadJBsCount}
   i=0; while [ $i -lt $deadJBsCount ]; do
     dJB=${deadJBs[$i]}
     dJB_ID=`echo $dJB | sed -e 's/SLID//' -e 's/_.*$//'`
@@ -155,19 +159,13 @@ if [ $deadJBsCount -ne 0 ]; then
       (( notFoundInSQL++ ))
     fi
     (( i++ ))
-    if [ $VERBOSE -eq 1 ]; then
-      # Prepare progress bar
-      progress_bar=`$FPB ${i} ${deadJBsCount} ${FPBlength}`
-      progress_msg=`printf "${printFormBar}"\
-        "Checking terminated jobs" ${i} ${deadJBsCount} "${progress_bar}"`
-      # Display progress bar
-      echo -ne "${progress_msg}"\\r
-    fi
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" "Checking terminated jobs" ${i} ${deadJBsCount}`
+    display_progres
   done
 
   if [ $VERBOSE -eq 1 ]; then
     echo
-#     printf "${printForm}" "Terminated jobs found" $deadJBsCount
     if [ $notFoundInSQL -gt 0 ]; then
       printf "${printForm}" \
         "Terminated jobs not registered in SQL" $notFoundInSQL
@@ -179,14 +177,10 @@ fi
 unset liveJBs
 liveJBs=(`cat ${liveLog}`)
 liveJBsCount=${#liveJBs[@]}
-# w=${#liveJBsCount}
-# let FPBlength=45-w-w+2
 
 notFoundInSQL=0
 if [ $liveJBsCount -ne 0 ]; then
-#   if [ $VERBOSE -eq 1 ]; then
-#     printf "${printForm}" "Active jobs found" $liveJBsCount
-#   fi
+  dpctrl[1]=${liveJBsCount}
   i=0; while [ $i -lt $liveJBsCount ]; do
     lvJB=${liveJBs[$i]}
     lvJB_ID=`echo $lvJB | sed -e 's/SLID//' -e 's/_.*$//'`
@@ -213,14 +207,9 @@ if [ $liveJBsCount -ne 0 ]; then
     fi
     (( i++ ))
 
-    if [ $VERBOSE -eq 1 ]; then
-      # Prepare progress bar
-      progress_bar=`$FPB ${i} ${liveJBsCount} ${FPBlength}`
-      progress_msg=`printf "${printFormBar}"\
-        "Updating active jobs" ${i} ${liveJBsCount} "${progress_bar}"`
-      # Display progress bar
-      echo -ne "${progress_msg}"\\r
-    fi
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" "Updating active jobs" ${i} ${liveJBsCount}`
+    display_progres
   done
 
   if [ $VERBOSE -eq 1 ];then
@@ -237,22 +226,14 @@ ${SQL} ${SQLDB} \
   "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'started';"  > $sqlLog
 
 # Remove present job directories from the SQL list log
-# srcJBs=(`cat ${scrLog}`)
-# srcJBsCount=${#srcJBs[@]}
-# w=${#srcJBsCount}
-# let FPBlength=45-w-w+2
+dpctrl[1]=${srcJBsCount}
 i=0; while [ $i -lt ${srcJBsCount} ]; do
   sJB_JD=`echo ${srcJBs[$i]} | sed 's/^SLID[0-9]*_//'`
   eval "sed -i '/${sJB_JD}/d' ${sqlLog}"
   (( i++ ))
-  if [ $VERBOSE -eq 1 ]; then
-    # Prepare progress bar
-    progress_bar=`$FPB ${i} ${srcJBsCount} ${FPBlength}`
-    progress_msg=`printf "${printFormBar}"\
-      "Looking for ghosts in DB" ${i} ${srcJBsCount} "${progress_bar}"`
-    # Display progress bar
-    echo -ne "${progress_msg}"\\r
-  fi
+  dpctrl[0]=${i}
+  dpctrl[3]=`printf "${printFormBar}" "Looking for ghosts in DB" ${i} ${srcJBsCount}`
+  display_progres
 done
 
 if [ $VERBOSE -eq 1 ]; then
@@ -262,13 +243,12 @@ fi
 # Ghost missing job directories in SQL records
 ghsJBs=(`cat ${sqlLog}`)
 ghsJBsCount=${#ghsJBs[@]}
-# w=${#ghsJBsCount}
-# let FPBlength=45-w-w+2
 
 if [ $ghsJBsCount -ne 0 ]; then
   if [ $VERBOSE -eq 1 ]; then
     printf "${printForm}" "Ghosts in SQL found" $ghsJBsCount
   fi
+  dpctrl[1]=${ghsJBsCount}
   i=0; while [ $i -lt $ghsJBsCount ]; do
     ghsJB=${ghsJBs[$i]}
     # Update SQL record
@@ -276,14 +256,9 @@ if [ $ghsJBsCount -ne 0 ]; then
 #      "UPDATE ${SQLTABLE} SET STATUS='ghost' WHERE JOBDIR LIKE '${ghsJB}';"
     (( i++ ))
 
-    if [ $VERBOSE -eq 1 ]; then
-      # Prepare progress bar
-      progress_bar=`$FPB ${i} ${ghsJBsCount} ${FPBlength}`
-      progress_msg=`printf "${printFormBar}"\
-        "Marking ghosts in DB" ${i} ${ghsJBsCount} "${progress_bar}"`
-      # Display progress bar
-      echo -ne "${progress_msg}"\\r
-    fi
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" "Marking ghosts in DB" ${i} ${ghsJBsCount}`
+    display_progres
   done
 
   if [ $VERBOSE -eq 1 ];then

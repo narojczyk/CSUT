@@ -14,7 +14,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Surce top-level utility variables
+# Surce top-level IO functions
+source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
+
+# Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
@@ -56,6 +59,9 @@ SQLtestHostname
 # Test if DB is present
 SQLDBpresent
 
+# Set initial control array for printing progress bar (see IOfunctions)
+dpctrl=( 0 0 66 ' ' )
+
 # Off we go
 cd ${SCRATCH}
 
@@ -73,8 +79,10 @@ if [ ${useSQL} -eq 1 ]; then
   jobsReconfigured=(\
     `${SQL} ${SQLDB}\
       "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'reconfigured';" `)
-  printFormBar=" Reading SQL setting scratchdir names (%d/%d) %s"
-  i=0; while [ $i -lt ${#jobsReconfigured[@]} ]; do
+  jobsReconfiguredN=${#jobsReconfigured[@]}
+  dpctrl[1]=${jobsReconfiguredN}
+  printFormBar=" %s (%${#jobsReconfiguredN}d/${jobsReconfiguredN})"
+  i=0; while [ $i -lt ${jobsReconfiguredN} ]; do
     jobScratchDir=`${SQL} ${SQLDB}\
       "SELECT SCRATCHDIR FROM JOBS WHERE JOBDIR LIKE '${jobsReconfigured[$i]}';" `
     if [ ${#jobScratchDir} -eq 0 ]; then
@@ -82,11 +90,9 @@ if [ ${useSQL} -eq 1 ]; then
     fi
     jobsToExpire=( ${jobsToExpire[@]} $jobScratchDir )
     (( i++ ))
-    # Prepare progress bar
-    progress_bar=`$FPB ${i} ${#jobsReconfigured[@]} ${FPBlength}`
-    progress_msg=`printf "${printFormBar}" $i ${#jobsReconfigured[@]} "${progress_bar}"`
-    # Display progress bar
-    echo -ne "${progress_msg}"\\r
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" "Reading SQL setting scratchdir names" ${i}`
+    display_progres
   done
   jobsToSave=""
 else
@@ -101,7 +107,8 @@ else
   inactiveJobsN=${#inactiveJobs[@]}
 
   # Investigate inactive jobs had they been salvaged.
-  printFormBar=" verifying slavage (%${#inactiveJobsN}d/${inactiveJobsN}) %s"
+  dpctrl[1]=${inactiveJobsN}
+  printFormBar=" %s (%${#inactiveJobsN}d/${inactiveJobsN})"
   i=0; while [ $i -lt ${inactiveJobsN} ]; do
     cd ${SCRATCH}/${inactiveJobs[$i]}
     sha1sum *part* *chkp* *msnap* > JOB_safety_verification.sha1
@@ -121,11 +128,9 @@ else
     rm ${SCRATCH}/${inactiveJobs[$i]}/JOB_safety_verification.sha1
 
     (( i++ ))
-    # Prepare progress bar
-    progress_bar=`$FPB ${i} ${inactiveJobsN} ${FPBlength}`
-    progress_msg=`printf "${printFormBar}" $i "${progress_bar}"`
-    # Display progress bar
-    echo -ne "${progress_msg}"\\r
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" "Verifying slavage" ${i}`
+    display_progres
   done
   
   cd ${SCRATCH}
@@ -146,7 +151,8 @@ printf " Proceed with removal of $jobsToExpireN directories [y/N] "
 userConfirm="N"; read userConfirm
 
 if [ "${userConfirm}" == "y" ] || [ "${userConfirm}" == "Y" ]; then
-  printFormBar=" Deleting job directories (%${#jobsToExpireN}d/${jobsToExpireN}) %s"
+  dpctrl[1]=${jobsToExpireN}
+  printFormBar=" %s (%${#jobsToExpireN}d/${jobsToExpireN})"
   i=0; while [ $i -lt ${jobsToExpireN} ]; do
     JBtoExp=${jobsToExpire[$i]}
     
@@ -161,11 +167,9 @@ if [ "${userConfirm}" == "y" ] || [ "${userConfirm}" == "Y" ]; then
     fi
     (( i++ ))
    
-    # Prepare progress bar
-    progress_bar=`$FPB ${i} ${jobsToExpireN} ${FPBlength}`
-    progress_msg=`printf "${printFormBar}" $i "${progress_bar}"`
-    # Display progress bar
-    echo -ne "${progress_msg}"\\r
+    dpctrl[0]=${i}
+    dpctrl[3]=`printf "${printFormBar}" "Deleting job directories" ${i}`
+    display_progres
   done
   echo
 fi

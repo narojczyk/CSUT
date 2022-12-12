@@ -14,7 +14,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Surce top-level utility variables
+# Surce top-level IO functions
+source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
+
+# Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
@@ -53,6 +56,9 @@ SQLtestHostname
 SQLDBpresent
 sqlAware=1 #TODO this is temporary hack
 
+# Set initial control array for printing progress bar (see IOfunctions)
+dpctrl=( 0 0 66 ' ' )
+
 # Off we go
 cd ${JOBSTARTER}
 
@@ -70,22 +76,21 @@ else
 fi
 jobSelArchiveN=${#jobSelArchive[@]}
 jobSelDeleteN=${#jobSelDelete[@]}
-printW=${#jobSelDeleteN}
+
+printW=$(( ${#jobSelArchiveN} > ${#jobSelDeleteN} ? ${#jobSelArchiveN} : ${#jobSelDeleteN} ))
+printFormBar=" [ %${printW}d/%${printW}d ]"
 
 printf " Found:\n"
 printf " %${printW}d jobs to archive\n" $jobSelArchiveN
 printf " %${printW}d jobs to delete\n" $jobSelDeleteN
 
 printf "\n Archiving selected jobs for re-use\n"
+dpctrl[1]=${jobSelArchiveN}
 i=0; while [ $i -lt ${jobSelArchiveN} ]; do
   JB=${jobSelArchive[$i]}
-  # Prepare progress bar
-  let ii=i+1
-  progress_bar=`$FPB ${ii} ${jobSelArchiveN} 60`
-  progress_msg=`printf " [ %${printW}d/%${printW}d ] %s"\
-    ${ii} ${jobSelArchiveN} "${progress_bar}"`
-  # Display progress bar
-  echo -ne "${progress_msg}"\\r
+  dpctrl[0]=$(expr ${i} + 1)
+  dpctrl[3]=`printf "${printFormBar}" ${dpctrl[0]} ${dpctrl[1]}`
+  display_progres
 
   # Remove the entry from database
   if [ ${useSQL} -ne 0 ] || [ ${sqlAware} -ne 0 ]; then
@@ -119,15 +124,12 @@ i=0; while [ $i -lt ${jobSelArchiveN} ]; do
 done
 
 printf "\n Removing obsolete jobs\n"
+dpctrl[1]=${jobSelDeleteN}
 i=0; while [ $i -lt ${jobSelDeleteN} ]; do
   JB=${jobSelDelete[$i]}
-  # Prepare progress bar
-  let ii=i+1
-  progress_bar=`$FPB ${ii} ${jobSelDeleteN} 60`
-  progress_msg=`printf " [ %${printW}d/%${printW}d ] %s"\
-    ${ii} ${jobSelDeleteN} "${progress_bar}"`
-  # Display progress bar
-  echo -ne "${progress_msg}"\\r
+  dpctrl[0]=$(expr ${i} + 1)
+  dpctrl[3]=`printf "${printFormBar}" ${dpctrl[0]} ${dpctrl[1]}`
+  display_progres
 
   # Remove the entry from database
   if [ ${useSQL} -ne 0 ] || [ ${sqlAware} -ne 0 ]; then

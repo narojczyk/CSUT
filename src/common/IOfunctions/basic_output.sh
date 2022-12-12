@@ -23,5 +23,26 @@ self_diagnostic() {
 . ${CSUT_CORE}/includes/SelfTest/check_environment_vars.sh;
 }
 
+display_progres(){
+  if [ $VERBOSE -eq 1 ]; then
+    cc=${dpctrl[0]}  # Current counter value
+    CM=${dpctrl[1]}  # Maximal counter value
+    LL=${dpctrl[2]}  # Total line length
+    PBS="${dpctrl[3]}" # Formated string to prepend to FPB
+
+    # PBS=" pre-bar string (opt.)" | BS="FPB output"
+    FPBL=$(expr $LL - ${#PBS} - 12) # Auto adjust the length of FPB to fill LL
+    if [ $FPBL -lt 10 ]; then
+      FPBL=10
+    fi
+    # Prepare progres bar
+    BS=`$FPB ${cc} ${CM} ${FPBL}`
+    progres_msg=`printf "%s %s" "${PBS}" "${BS}"`
+
+    # Display progress bar
+    echo -ne "${progres_msg}"\\r
+  fi
+}
+
 
 return 0;

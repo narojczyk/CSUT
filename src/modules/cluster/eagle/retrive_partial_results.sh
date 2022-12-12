@@ -14,7 +14,10 @@ CORE="${CSUT_CORE}/modules/cluster/eagle"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
-# Surce top-level utility variables
+# Surce top-level IO functions
+source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
+
+# Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
 # Script variables
@@ -79,6 +82,8 @@ if [ $TJCount -eq 0 ]; then
   exit 0
 fi
 
+# Set initial control array for printing progress bar (see IOfunctions)
+dpctrl=( 0 0 66 ' ' )
 printWidth=${#TJCount}
 
 cd $JOBSTARTER; 
@@ -171,14 +176,14 @@ while [ $i -lt ${TJCount} ]; do
         cd - >/dev/null
         cp ${SCRATCH}/${scratchJob}/${chksumFile} .
 
-        printFormBar=" copying data from SCRATCH (%${#salvageListN}d/${salvageListN}) %s"
+        printFormBar=" copying data from SCRATCH (%${#salvageListN}d/${salvageListN})"
+        dpctrl[1]=${salvageListN}
         q=0; while [ $q -lt ${salvageListN} ]; do
           cp ${SCRATCH}/${scratchJob}/${salvageList[$q]} .
           (( q++ ))
-          progress_bar=`$FPB ${q} ${salvageListN} ${FPBlength}`
-          progress_msg=`printf "${printFormBar}" $q "${progress_bar}"`
-          # Display progress bar
-          echo -ne "${progress_msg}"\\r
+          dpctrl[0]=${i}
+          dpctrl[3]=`printf "${printFormBar}" ${q}`
+          display_progres
         done
         unset q
 
