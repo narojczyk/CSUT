@@ -20,10 +20,6 @@ source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
 # Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
-# Script variables
-useSQL=0
-sqlAware=1
-
 while getopts sv argv
 do
     case "${argv}" in
@@ -54,7 +50,6 @@ SQLtestHostname
 
 # Test if DB is present
 SQLDBpresent
-sqlAware=1 #TODO this is temporary hack
 
 # Set initial control array for printing progress bar (see IOfunctions)
 dpctrl=( 0 0 66 ' ' )
@@ -93,7 +88,7 @@ i=0; while [ $i -lt ${jobSelArchiveN} ]; do
   display_progres
 
   # Remove the entry from database
-  if [ ${useSQL} -ne 0 ] || [ ${sqlAware} -ne 0 ]; then
+  if [ ${useSQL} -ne 0 ]; then
     sqlRemoveStatus=5
     sqlWatchDog=0
     while [ ${sqlRemoveStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
@@ -132,7 +127,7 @@ i=0; while [ $i -lt ${jobSelDeleteN} ]; do
   display_progres
 
   # Remove the entry from database
-  if [ ${useSQL} -ne 0 ] || [ ${sqlAware} -ne 0 ]; then
+  if [ ${useSQL} -ne 0 ]; then
     sqlRemoveStatus=5
     sqlWatchDog=0
     while [ ${sqlRemoveStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
