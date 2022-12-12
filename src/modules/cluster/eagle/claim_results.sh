@@ -235,7 +235,7 @@ while [ $i -le $setIDend ]; do
       (( cpyFailCount++ ))
     fi
     (( j++ ))
-    dpctrl[0]=${i}
+    dpctrl[0]=${j}
     dpctrl[3]=`printf "${printFormBar}" $j $cpyCount $cpyFailCount`
     display_progres
   done
