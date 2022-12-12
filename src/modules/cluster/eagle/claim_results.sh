@@ -36,11 +36,8 @@ done
 source ${CSUT_CORE_INC}/header.sh \
   "${_BLD}${_PRP}Inspect directory with simulations and claim results${_RST}"
 
-# Surce module-level utility variables
-source ${CORE}/init/set_module_constants.sh
-
-# define script-wide env. variables
-source ${CORE}/init/declare_environment_vars.sh
+# define module-level resource paths
+source ${CORE}/init/set_module_resource_paths.sh
 
 # get names of system-wide env. variables
 env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
@@ -48,6 +45,9 @@ env_dirs=( SCRATCH JOBSTARTER SIMDATA DBFOLDER CODES )
 # Verify that environment variables are set correctly
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
+
+# Surce module-level utility variables
+source ${INITIALS}/set_module_constants.sh
 
 # When enabled, test if SQL database is availiable
 SQLtestHostname
@@ -197,7 +197,7 @@ while [ $i -le $setIDend ]; do
     if [ -f ${JB}/${resArchive} ]; then
       # Copy data archive to destination repository
       # syntax: Copy <file name> <source path> <target path>
-      source ${CORE}/utils/copy_and_verify_archive.sh ${resArchive} ${JB} ${DEST}
+      source ${UTILS}/copy_and_verify_archive.sh ${resArchive} ${JB} ${DEST}
 
       # Statistics: get execution time
       mm=`cat ${JB}/${JBexecTime} | sed 's/^real\t//' | sed 's/m.*$//'`
@@ -245,7 +245,7 @@ while [ $i -le $setIDend ]; do
   
   # Calculate and display averages for this set of jobs
   if [ $cpyCount -gt 0 ]; then
-    source ${CORE}/utils/calculate_average_exectime.sh
+    source ${UTILS}/calculate_average_exectime.sh
   fi
 
   (( i++ ))

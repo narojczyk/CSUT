@@ -31,11 +31,8 @@ done
 source ${CSUT_CORE_INC}/header.sh \
   "${_BLD}${_PRP}Retrive partial results from terminated simulations${_RST}"
 
-# Surce module-level utility variables
-source ${CORE}/init/set_module_constants.sh
-
-# define script-wide env. variables
-source ${CORE}/init/declare_environment_vars.sh
+# Surce module-level resource paths
+source ${CORE}/init/set_module_resource_paths.sh
 
 # get names of system-wide env. variables
 env_dirs=( SCRATCH JOBSTARTER DBFOLDER )
@@ -43,6 +40,9 @@ env_dirs=( SCRATCH JOBSTARTER DBFOLDER )
 # Verify that environment variables are set correctly
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
+
+# Surce module-level utility variables
+source ${INITIALS}/set_module_constants.sh
 
 log="${JOBSTARTER}/${logFileName}"
 

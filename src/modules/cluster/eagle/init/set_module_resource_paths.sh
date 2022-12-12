@@ -3,11 +3,8 @@
 # Define and declare additional environment variables for this script
 #   directories
 INITIALS="$CORE/init"
+UTILS="$CORE/utils"
 
-#   utility programs
-#FPB="$UTILS/fancypb"    #TODO: check if exists
-#PYTHON="/usr/bin/python2"
-
-script_dirs=( INITIALS )
+script_dirs=( INITIALS UTILS )
 
 
