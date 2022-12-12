@@ -20,15 +20,6 @@ source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
 # Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
-# Script variables
-useSQL=0
-logfile=`echo ${SNAME} | sed 's;^.*/;;'`
-logmarker=`eval date +%F`
-logsuffix=`date +%s`
-chksumFile="JOB_salvage_checksum.sha1"
-sawFile="${SNAME}.lock"
-FPBlength=25
-
 while getopts sv argv; do
   case "${argv}" in
     s) useSQL=1 ;;
@@ -53,7 +44,7 @@ env_dirs=( SCRATCH JOBSTARTER DBFOLDER )
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
-log="${JOBSTARTER}/${logfile}_${logmarker}_${logsuffix}.log"
+log="${JOBSTARTER}/${logFileName}"
 
 # When enabled, test if SQL database is availiable
 SQLtestHostname
@@ -61,7 +52,7 @@ SQLtestHostname
 # Test if DB is present
 SQLDBpresent
 
-eval "echo \" Log info to $log\" | sed 's;${JOBSTARTER};JOBSTARTER;'"
+echo " Log to file: ${_YEL}${_BLD}${logFileName}${_RST} on JOBSTARTER"
 
 # Get list of terminated jobs
 if [ ${useSQL} -eq 1 ]; then
@@ -72,19 +63,20 @@ else
     echo " ${_RED}Pass the list of jobs to retrive as command line arguments${_RST}"
     exit 1
   else
+    # TODO: Check if the job is running or pending - if so, remove from the list
     TJlist=( "$@" )
   fi
 fi
 TJCount=${#TJlist[@]}
 
 if [ $TJCount -eq 0 ]; then
-  echo " No jobs candidates found."
+  echo " No job candidates to retrieve files from."
   exit 0
 fi
 
 # Set initial control array for printing progress bar (see IOfunctions)
 dpctrl=( 0 0 66 ' ' )
-printWidth=${#TJCount}
+WDTH=${#TJCount}
 
 cd $JOBSTARTER; 
 
@@ -95,11 +87,11 @@ while [ $i -lt ${TJCount} ]; do
   inputFound=0;
   
   cd $JOBSTARTER; 
-  printf "\n [%${printWidth}d/${TJCount}] %s\n" $(expr $i + 1) $job
+  printf "\n [%${WDTH}d/${TJCount}] %s\n" $(expr $i + 1) $job
   echo $job >> $log
 
-  if [ ! -f ${job}/${sawFile} ]; then
-    date > ${job}/${sawFile} 
+  if [ ! -f ${job}/${lockFile} ]; then
+    date > ${job}/${lockFile} 
     cd $job
  
     if [ ${useSQL} -eq 1 ]; then
@@ -123,8 +115,8 @@ while [ $i -lt ${TJCount} ]; do
         # One previous run was found (optimal case)
         inputFound=1
         # extract job ID from the scrach job directory name
-        scratchJob=`echo ${scratchJobs[0]} | sed 's;^.*/;;' `
-        jobID=`echo ${scratchJob} | eval "sed -e 's/_${job}//' | sed 's/[aA-zZ]//g'"`
+        scratch_JB=`echo ${scratchJobs[0]##*/}`
+        jobID=`echo ${scratch_JB} | eval "sed -e 's/_${job}//' | sed 's/[aA-zZ]//g'"`
       elif [ $scratchJobsN -gt 1 ]; then
         # Multiple old runs found (scratch needs cleaning)
         echo " Multiple old input found on SCRATCH(${scratchJobsN}):"
@@ -136,16 +128,12 @@ while [ $i -lt ${TJCount} ]; do
         unset q
         # TODO implement read user slection and continue
         exit 1
-      else
-        # this should never happen
-        echo " Things took a wrong turn"
-        exit 1
       fi
     else
       # Find job directory on scratch using job ID (no need to check multiple hits
       # queueing system will not assign one id to multiple jobs)
-      scratchJob=`ls -1d ${SCRATCH}/*${jobID}*  2>/dev/null | sed 's;^.*/;;'`
-      if [ -n "${scratchJob}" ]; then
+      scratch_JB=`ls -1d ${SCRATCH}/*${jobID}*  2>/dev/null | sed 's;^.*/;;'`
+      if [ -n "${scratch_JB}" ]; then
         inputFound=1
       fi
     fi
@@ -158,28 +146,29 @@ while [ $i -lt ${TJCount} ]; do
       preserveFilesN=${#preserveFiles[@]}
     
       # Get list of files in scratch job directory (source of salvage) 
-      ls -l ${SCRATCH}/${scratchJob}/*.* 2>/dev/null |\
-        grep -v -e JOB_ -e sha1 -e ^-rwxr -e "\ 0\ " > JOB_salvage_list.txt
+      ls -l ${SCRATCH}/${scratch_JB}/*.* 2>/dev/null |\
+        grep -v -e JOB_ -e sha1 -e ^-rwxr -e "\ 0\ " > ${salvageListFile}
       # remove files already present from beeing overwritten 
       q=0; while [ $q -lt ${preserveFilesN} ]; do
-        eval "sed -i '/${preserveFiles[$q]}/d' JOB_salvage_list.txt"
+        eval "sed -i '/${preserveFiles[$q]}/d' ${salvageListFile}"
         (( q++ ))
       done
       unset q
     
       # Read list of files to copy from scratch
-      salvageList=(`cat JOB_salvage_list.txt | sed 's;^.*/;;'`)
+      salvageList=(`cat ${salvageListFile} | sed 's;^.*/;;'`)
       salvageListN=${#salvageList[@]}
       if [ $salvageListN -ne 0 ]; then
-        cd ${SCRATCH}/${scratchJob}
+        cd ${SCRATCH}/${scratch_JB}
         sha1sum ${salvageList[@]} > ${chksumFile}
         cd - >/dev/null
-        cp ${SCRATCH}/${scratchJob}/${chksumFile} .
+        cp ${SCRATCH}/${scratch_JB}/${chksumFile} .
 
-        printFormBar=" copying data from SCRATCH (%${#salvageListN}d/${salvageListN})"
+        WDTH=${#salvageListN}
+        printFormBar=" copying data from SCRATCH (%${WDTH}d/${salvageListN})"
         dpctrl[1]=${salvageListN}
         q=0; while [ $q -lt ${salvageListN} ]; do
-          cp ${SCRATCH}/${scratchJob}/${salvageList[$q]} .
+          cp ${SCRATCH}/${scratch_JB}/${salvageList[$q]} .
           (( q++ ))
           dpctrl[0]=${i}
           dpctrl[3]=`printf "${printFormBar}" ${q}`
@@ -217,18 +206,20 @@ while [ $i -lt ${TJCount} ]; do
         fi
 
       else
-        echo " No previous results to salvage" 
-        echo " No previous results to salvage" >> $log
+        echo " No previous results to salvage for this job" 
+        echo " No previous results to salvage for this job" >> $log
       fi
     
     else
       echo " No new files to retrive"
+      echo " No new files to retrive" >> $log
+        # TODO: change status of the job from 'terminated' to 'reconfigured'
     fi
 
-    rm ${sawFile}  # remove warning sign
+    rm ${lockFile}  # remove warning sign
   else
     echo " Avoiding script colision - skipping"
-  fi # sawFile conditional
+  fi # lockFile conditional
 
   (( i++ ))
 done
