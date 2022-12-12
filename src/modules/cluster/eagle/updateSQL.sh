@@ -214,23 +214,23 @@ fi
 
 
 # List SQL active records
-${SQL} ${SQLDB} \
-  "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'started';"  > $sqlLog
+#${SQL} ${SQLDB} \
+#  "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'started';"  > $sqlLog
 
 # Remove present job directories from the SQL list log
-dpctrl[1]=${srcJBsCount}
-i=0; while [ $i -lt ${srcJBsCount} ]; do
-  sJB_JD=`echo ${srcJBs[$i]} | sed 's/^SLID[0-9]*_//'`
-  eval "sed -i '/${sJB_JD}/d' ${sqlLog}"
-  (( i++ ))
-  dpctrl[0]=${i}
-  dpctrl[3]=`printf "${printFormBar}" "Looking for ghosts in DB" ${i} ${srcJBsCount}`
-  display_progres
-done
-
-if [ $VERBOSE -eq 1 ]; then
-  echo
-fi
+#dpctrl[1]=${srcJBsCount}
+#i=0; while [ $i -lt ${srcJBsCount} ]; do
+#  sJB_JD=`echo ${srcJBs[$i]} | sed 's/^SLID[0-9]*_//'`
+#  eval "sed -i '/${sJB_JD}/d' ${sqlLog}"
+#  (( i++ ))
+#  dpctrl[0]=${i}
+#  dpctrl[3]=`printf "${printFormBar}" "Looking for ghosts in DB" ${i} ${srcJBsCount}`
+#  display_progres
+#done
+#
+#if [ $VERBOSE -eq 1 ]; then
+#  echo
+#fi
 
 # Ghost missing job directories in SQL records
 #ghsJBs=(`cat ${sqlLog}`)
