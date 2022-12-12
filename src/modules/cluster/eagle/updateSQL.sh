@@ -266,6 +266,9 @@ if [ $ghsJBsCount -ne 0 ]; then
   fi
 fi
 
+# Display progres histogram
+SQLprogresHistogram
+
 # Remove logs
 rm $scrLog $deadLog $liveLog $sqlLog
 
