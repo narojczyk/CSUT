@@ -187,7 +187,7 @@ if [ $liveJBsCount -ne 0 ]; then
       # Check progress of the live job
       target=`cat ${lvJB}/*.ini |\
         grep "Number of data blocks" | sed 's/^.*:\ *//'`
-      present=`ls -1d ${lvJB}/*part* 2 > /dev/null |wc -l`
+      present=`ls -1d ${lvJB}/*part* 2>/dev/null |wc -l`
       lvJB_prog=`bc -l <<< $present/$target |\
         sed -e 's/00*$/0/' -e 's/^\./0\./'`
 
