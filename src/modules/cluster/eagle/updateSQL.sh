@@ -31,13 +31,8 @@ done
 source ${CSUT_CORE_INC}/header.sh \
   "${_BLD}${_PRP}Sync information about running jobs with SQL${_RST}"
 
-
 # Script variables
 useSQL=1
-scrLog="scratch.log"
-sqlLog="sqlRecords.txt"
-deadLog="notactive_jobs.txt"
-liveLog="active_jobs.txt"
 
 # Surce module-level utility variables
 source ${CORE}/init/set_module_constants.sh
@@ -75,9 +70,9 @@ SQLJobCount=`${SQL} ${SQLDB} \
 if [ $VERBOSE -eq 1 ]; then
   # Set common printing parameters
   if [ ${#jobIDsN} -gt ${#SQLJobCount} ]; then
-    printWidth=${#jobIDsN}
+    WDTH=${#jobIDsN}
   else
-    printWidth=${#SQLJobCount}
+    WDTH=${#SQLJobCount}
   fi
 
   printf "${printForm}" "Actual running jobs" ${jobIDsN}
@@ -97,12 +92,11 @@ srcJBsCount=${#srcJBs[@]}
 
 if [ $VERBOSE -eq 1 ]; then
   # Set common printing parameters
-  if [ ${printWidth} -lt ${#srcJBsCount} ]; then
-    printWidth=${#srcJBsCount}
+  if [ ${WDTH} -lt ${#srcJBsCount} ]; then
+    WDTH=${#srcJBsCount}
   fi
-  printForm=" %-55s : %${printWidth}d\n"
-  printFormBar=" %-24s (%${printWidth}d/%${printWidth}d)"
-  let FPBlength=22-printWidth-printWidth+2
+  printForm=" %-55s : %${WDTH}d\n"
+  printFormBar=" %-24s (%${WDTH}d/%${WDTH}d)"
 
   # Set initial control array for printing progress bar (see IOfunctions)
   dpctrl=( 0 0 66 ' ' )
@@ -129,8 +123,6 @@ unset deadJBs
 deadJBs=(`cat ${deadLog}`)
 deadJBsCount=${#deadJBs[@]}
 notFoundInSQL=0
-# w=${#deadJBsCount}
-# let FPBlength=45-w-w+2
 
 if [ $deadJBsCount -ne 0 ]; then
   dpctrl[1]=${deadJBsCount}
@@ -241,30 +233,30 @@ if [ $VERBOSE -eq 1 ]; then
 fi
 
 # Ghost missing job directories in SQL records
-ghsJBs=(`cat ${sqlLog}`)
-ghsJBsCount=${#ghsJBs[@]}
-
-if [ $ghsJBsCount -ne 0 ]; then
-  if [ $VERBOSE -eq 1 ]; then
-    printf "${printForm}" "Ghosts in SQL found" $ghsJBsCount
-  fi
-  dpctrl[1]=${ghsJBsCount}
-  i=0; while [ $i -lt $ghsJBsCount ]; do
-    ghsJB=${ghsJBs[$i]}
-    # Update SQL record
-#    ${SQL} ${SQLDB} \
-#      "UPDATE ${SQLTABLE} SET STATUS='ghost' WHERE JOBDIR LIKE '${ghsJB}';"
-    (( i++ ))
-
-    dpctrl[0]=${i}
-    dpctrl[3]=`printf "${printFormBar}" "Marking ghosts in DB" ${i} ${ghsJBsCount}`
-    display_progres
-  done
-
-  if [ $VERBOSE -eq 1 ];then
-    echo
-  fi
-fi
+#ghsJBs=(`cat ${sqlLog}`)
+#ghsJBsCount=${#ghsJBs[@]}
+#
+#if [ $ghsJBsCount -ne 0 ]; then
+#  if [ $VERBOSE -eq 1 ]; then
+#    printf "${printForm}" "Ghosts in SQL found" $ghsJBsCount
+#  fi
+#  dpctrl[1]=${ghsJBsCount}
+#  i=0; while [ $i -lt $ghsJBsCount ]; do
+#    ghsJB=${ghsJBs[$i]}
+#    # Update SQL record
+##    ${SQL} ${SQLDB} \
+##      "UPDATE ${SQLTABLE} SET STATUS='ghost' WHERE JOBDIR LIKE '${ghsJB}';"
+#    (( i++ ))
+#
+#    dpctrl[0]=${i}
+#    dpctrl[3]=`printf "${printFormBar}" "Marking ghosts in DB" ${i} ${ghsJBsCount}`
+#    display_progres
+#  done
+#
+#  if [ $VERBOSE -eq 1 ];then
+#    echo
+#  fi
+#fi
 
 # Display progres histogram
 SQLprogresHistogram

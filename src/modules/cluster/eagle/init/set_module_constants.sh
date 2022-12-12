@@ -21,3 +21,9 @@ overwrite_all_targets="no"
 # retrive_partial_results constants
 chksumFile="JOB_salvage_checksum.sha1"
 salvageListFile="JOB_salvage_list.txt"
+
+# updateSQL
+scrLog="scratch.log"
+sqlLog="sqlRecords.txt"
+deadLog="notactive_jobs.txt"
+liveLog="active_jobs.txt"
