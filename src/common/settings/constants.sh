@@ -40,6 +40,7 @@ STARTDIR=$PWD
 
 # Defaults
 VERBOSE=1
+useSQL=0
 
 # SQL constants
 continueWithoutSQL=0

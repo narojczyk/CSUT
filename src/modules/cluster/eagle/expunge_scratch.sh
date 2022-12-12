@@ -20,13 +20,6 @@ source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
 # Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
-# Script variables
-useSQL=0
-logfile=`echo ${SNAME} | sed 's;^.*/;;'`
-logmarker=`eval date +%F`
-logsuffix=`date +%s`
-FPBlength=30
-
 while getopts sv argv; do
     case "${argv}" in
         s) useSQL=1 ;;
@@ -51,7 +44,7 @@ env_dirs=( SCRATCH JOBSTARTER DBFOLDER )
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh\
   ${env_dirs[@]} ${script_dirs[@]} FPB
 
-log="${SCRATCH}/${logfile}_${logmarker}_${logsuffix}.log"
+log="${SCRATCH}/${logFileName}"
 
 # When enabled, test if SQL database is availiable
 SQLtestHostname
@@ -64,6 +57,9 @@ dpctrl=( 0 0 66 ' ' )
 
 # Off we go
 cd ${SCRATCH}
+if [ ${VERBOSE} -eq 1 ]; then
+  echo " Log to file: ${_YEL}${_BLD}${logFileName}${_RST} on SCRATCH"
+fi
 
 # Query system for actual running jobs
 jobIDs=(\
@@ -81,17 +77,19 @@ if [ ${useSQL} -eq 1 ]; then
       "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'reconfigured';" `)
   jobsReconfiguredN=${#jobsReconfigured[@]}
   dpctrl[1]=${jobsReconfiguredN}
-  printFormBar=" %s (%${#jobsReconfiguredN}d/${jobsReconfiguredN})"
+  WDTH=${#jobsReconfiguredN}
+  printFormBar=" %s (%${WDTH}d/${jobsReconfiguredN})"
   i=0; while [ $i -lt ${jobsReconfiguredN} ]; do
+    JB_Rec=${jobsReconfigured[$i]}
     jobScratchDir=`${SQL} ${SQLDB}\
-      "SELECT SCRATCHDIR FROM JOBS WHERE JOBDIR LIKE '${jobsReconfigured[$i]}';" `
+      "SELECT SCRATCHDIR FROM JOBS WHERE JOBDIR LIKE '${JB_Rec}';" `
     if [ ${#jobScratchDir} -eq 0 ]; then
-      jobScratchDir=`ls -1d SLID[0-9]*_${jobsReconfigured[$i]}`
+      jobScratchDir=`ls -1d SLID[0-9]*_${JB_Rec}`
     fi
     jobsToExpire=( ${jobsToExpire[@]} $jobScratchDir )
     (( i++ ))
     dpctrl[0]=${i}
-    dpctrl[3]=`printf "${printFormBar}" "Reading SQL setting scratchdir names" ${i}`
+    dpctrl[3]=`printf "${printFormBar}" "Prepare the list of SCRATCH directories" ${i}`
     display_progres
   done
   jobsToSave=""
@@ -108,7 +106,8 @@ else
 
   # Investigate inactive jobs had they been salvaged.
   dpctrl[1]=${inactiveJobsN}
-  printFormBar=" %s (%${#inactiveJobsN}d/${inactiveJobsN})"
+  WDTH=${#inactiveJobsN}
+  printFormBar=" %s (%${WDTH}d/${inactiveJobsN})"
   i=0; while [ $i -lt ${inactiveJobsN} ]; do
     cd ${SCRATCH}/${inactiveJobs[$i]}
     sha1sum *part* *chkp* *msnap* > JOB_safety_verification.sha1
@@ -143,16 +142,16 @@ echo
 
 jobsToExpireN=${#jobsToExpire[@]}
 jobsToSaveN=${#jobsToSave[@]}
-printW=${#jobsToExpireN}
+WDTH=${#jobsToExpireN}
 
-printf " Found:\n\t%${printW}d jobs to safely remove\n" $jobsToExpireN
-printf "\t%${printW}d jobs saved for salvage\n" $jobToSaveN
+printf " Found:\n\t%${WDTH}d jobs to safely remove\n" $jobsToExpireN
+printf "\t%${WDTH}d jobs saved for salvage\n" $jobToSaveN
 printf " Proceed with removal of $jobsToExpireN directories [y/N] " 
 userConfirm="N"; read userConfirm
 
 if [ "${userConfirm}" == "y" ] || [ "${userConfirm}" == "Y" ]; then
   dpctrl[1]=${jobsToExpireN}
-  printFormBar=" %s (%${#jobsToExpireN}d/${jobsToExpireN})"
+  printFormBar=" %s (%${WDTH}d/${jobsToExpireN})"
   i=0; while [ $i -lt ${jobsToExpireN} ]; do
     JBtoExp=${jobsToExpire[$i]}
     
@@ -162,8 +161,8 @@ if [ "${userConfirm}" == "y" ] || [ "${userConfirm}" == "Y" ]; then
         ${SQL} ${SQLDB} \
           "UPDATE ${SQLTABLE} SET SCRATCHDIR='' WHERE JOBDIR LIKE '${JBtoExp#SLID[0-9]*_}';"
       fi
-    # else
-      # TODO: log that dir not found
+    else
+      echo "${JBtoExp} directory NOT found"
     fi
     (( i++ ))
    
