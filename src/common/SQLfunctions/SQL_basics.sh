@@ -36,6 +36,24 @@ SQLDBpresent(){
   fi
 }
 
+SQLconnect(){
+  SQLQUERRY="$1"
+  WD_LIMIT_COUNT=60
+  if [ ${useSQL} -ne 0 ] && [ ${#SQLQUERRY} -gt 0 ]; then
+    sqlActionStatus=5
+    sqlWatchDog=0
+    while [ ${sqlActionStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_COUNT ]; do
+      ${SQL} ${SQLDB} "${SQLQUERRY}"
+      sqlActionStatus=$?
+      if [ $sqlActionStatus -ne 0 ]; then
+        (( sqlWatchDog++ ))
+        sleep $(expr ${RANDOM:1:1} + 1)
+        echo " SQL connection timeout. Waiting ${sqlWatchDog}/${WD_LIMIT_COUNT}" >> ${log:-/dev/null}
+      fi
+    done
+  fi
+}
+
 SQLprogresHistogram(){
   hData=(\
     `${SQL} ${SQLDB} "SELECT COUNT(ID) FROM ${SQLTABLE} WHERE (PROGRES >0.0  AND PROGRES <=0.05);"` \

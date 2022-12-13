@@ -64,8 +64,8 @@ jobIDs=(\
 jobIDsN=${#jobIDs[@]}
 
 # Query SQL for recorded jobs
-SQLJobCount=`${SQL} ${SQLDB} \
-  "SELECT COUNT(ID) FROM JOBS WHERE STATUS LIKE 'started';"`
+SQLQUERRY="SELECT COUNT(ID) FROM JOBS WHERE STATUS LIKE 'started';"
+SQLJobCount=`SQLconnect "${SQLQUERRY}"`
 
 if [ $VERBOSE -eq 1 ]; then
   # Set common printing parameters
@@ -74,6 +74,11 @@ if [ $VERBOSE -eq 1 ]; then
   else
     WDTH=${#SQLJobCount}
   fi
+
+  printForm=" %-56s : %${WDTH}d\n"
+
+  # Set initial control array for printing progress bar (see IOfunctions)
+  dpctrl=( 0 0 66 ' ' )
 
   printf "${printForm}" "Actual running jobs" ${jobIDsN}
   printf "${printForm}" "Running jobs indicated in DB" ${SQLJobCount}
@@ -95,11 +100,8 @@ if [ $VERBOSE -eq 1 ]; then
   if [ ${WDTH} -lt ${#srcJBsCount} ]; then
     WDTH=${#srcJBsCount}
   fi
-  printForm=" %-55s : %${WDTH}d\n"
+  printForm=" %-56s : %${WDTH}d\n"
   printFormBar=" %-24s (%${WDTH}d/%${WDTH}d)"
-
-  # Set initial control array for printing progress bar (see IOfunctions)
-  dpctrl=( 0 0 66 ' ' )
 fi
 
 
@@ -131,22 +133,22 @@ if [ $deadJBsCount -ne 0 ]; then
     dJB_ID=`echo $dJB | sed -e 's/SLID//' -e 's/_.*$//'`
     dJB_JD=`echo $dJB | sed 's/^SLID[0-9]*_//'`
 
-    sqlID=`${SQL} ${SQLDB} \
-      "SELECT ID FROM JOBS WHERE (JOBID=${dJB_ID} OR JOBDIR LIKE '${dJB_JD}' );"`
+    SQLQUERRY="SELECT ID FROM JOBS WHERE (JOBID=${dJB_ID} OR JOBDIR LIKE '${dJB_JD}' );"
+    sqlID=`SQLconnect "${SQLQUERRY}"`
 
     if [ ${#sqlID} -gt 0 ]; then
-    # The job has been found in the register
+      # The job has been found in the register
 
-    # Check progress of the dead job
-    target=`cat ${dJB}/*.ini |\
-      grep "Number of data blocks" | sed 's/^.*:\ *//'`
-    present=`ls -1d ${dJB}/*part* |wc -l`
-    dJB_prog=`bc -l <<< $present/$target |\
-      sed -e 's/00*$/0/' -e 's/^\./0\./'`
+      # Check progress of the dead job
+      target=`cat ${dJB}/*.ini |\
+        grep "Number of data blocks" | sed 's/^.*:\ *//'`
+      present=`ls -1d ${dJB}/*part* |wc -l`
+      dJB_prog=`bc -l <<< $present/$target |\
+        sed -e 's/00*$/0/' -e 's/^\./0\./'`
 
-    # Update SQL record
-    ${SQL} ${SQLDB} \
-            "UPDATE ${SQLTABLE} SET PROGRES='${dJB_prog}', STATUS='terminated' WHERE ID=${sqlID};"
+      # Update SQL record
+      SQLQUERRY="UPDATE ${SQLTABLE} SET PROGRES='${dJB_prog}', STATUS='terminated' WHERE ID=${sqlID};"
+      SQLconnect "${SQLQUERRY}"
     else
       (( notFoundInSQL++ ))
     fi
@@ -178,22 +180,22 @@ if [ $liveJBsCount -ne 0 ]; then
     lvJB_ID=`echo $lvJB | sed -e 's/SLID//' -e 's/_.*$//'`
     lvJB_JD=`echo $lvJB | sed 's/^SLID[0-9]*_//'`
 
-    sqlID=`${SQL} ${SQLDB} \
-      "SELECT ID FROM JOBS WHERE (JOBID=${lvJB_ID} OR JOBDIR LIKE '${lvJB_JD}' );"`
+    SQLQUERRY="SELECT ID FROM JOBS WHERE (JOBID=${lvJB_ID} OR JOBDIR LIKE '${lvJB_JD}' );"
+    sqlID=`SQLconnect "${SQLQUERRY}"`
 
     if [ ${#sqlID} -gt 0 ]; then
-      # The job has been found in the register
+        # The job has been found in the register
 
-      # Check progress of the live job
-      target=`cat ${lvJB}/*.ini |\
-        grep "Number of data blocks" | sed 's/^.*:\ *//'`
-      present=`ls -1d ${lvJB}/*part* 2>/dev/null |wc -l`
-      lvJB_prog=`bc -l <<< $present/$target |\
-        sed -e 's/00*$/0/' -e 's/^\./0\./'`
+        # Check progress of the live job
+        target=`cat ${lvJB}/*.ini |\
+          grep "Number of data blocks" | sed 's/^.*:\ *//'`
+        present=`ls -1d ${lvJB}/*part* 2>/dev/null |wc -l`
+        lvJB_prog=`bc -l <<< $present/$target |\
+          sed -e 's/00*$/0/' -e 's/^\./0\./'`
 
-      # Update SQL record
-      ${SQL} ${SQLDB} \
-        "UPDATE ${SQLTABLE} SET PROGRES='${lvJB_prog}', STATUS='started' WHERE ID=${sqlID};"
+        # Update SQL record
+        SQLQUERRY="UPDATE ${SQLTABLE} SET PROGRES='${lvJB_prog}', STATUS='started' WHERE ID=${sqlID};"
+        SQLconnect "${SQLQUERRY}"
       else
         (( notFoundInSQL++ ))
     fi
