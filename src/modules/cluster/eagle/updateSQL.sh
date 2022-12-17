@@ -264,6 +264,6 @@ fi
 SQLprogresHistogram
 
 # Remove logs
-rm $scrLog $deadLog $liveLog $sqlLog
+rm $scrLog $deadLog $liveLog #$sqlLog
 
 exit 0
