@@ -93,12 +93,11 @@ while [ $i -lt ${TJCount} ]; do
   if [ ! -f ${job}/${lockFile} ]; then
     date > ${job}/${lockFile} 
     cd $job
- 
-    if [ ${useSQL} -eq 1 ]; then
+
+    # get job's old ID based on files from previous run
+    jobID=`ls -1 JOB_[0-9]*.[oe][ur][rt] 2>/dev/null | sed 's/JOB_\([0-9]*\).[oe].*$/\1/' | sort -u | tail -n 1`
+    if [ ! -n "${jobID}" ] && [ ${useSQL} -eq 1 ]; then
       jobID=`${SQL} ${SQLDB} "SELECT JOBID FROM JOBS WHERE JOBDIR LIKE '${job}';"`
-    else
-      # get job's old ID based on files from previous run
-      jobID=`ls -1 JOB_[0-9]*[rt] 2>/dev/null | head -n 1 | sed -e 's/JOB_//' -e 's/\..*//'`
     fi
 
     if [ ! -n "${jobID}" ]; then
@@ -116,7 +115,7 @@ while [ $i -lt ${TJCount} ]; do
         inputFound=1
         # extract job ID from the scrach job directory name
         scratch_JB=`echo ${scratchJobs[0]##*/}`
-        jobID=`echo ${scratch_JB} | eval "sed -e 's/_${job}//' | sed 's/[aA-zZ]//g'"`
+        jobID=`echo ${scratch_JB} | eval "sed -e 's/_${job}//'" | sed 's/[Aa-Zz]//g'`
       elif [ $scratchJobsN -gt 1 ]; then
         # Multiple old runs found (scratch needs cleaning)
         echo " Multiple old input found on SCRATCH(${scratchJobsN}):"
@@ -164,13 +163,13 @@ while [ $i -lt ${TJCount} ]; do
         cd - >/dev/null
         cp ${SCRATCH}/${scratch_JB}/${chksumFile} .
 
-        WDTH=${#salvageListN}
-        printFormBar=" copying data from SCRATCH (%${WDTH}d/${salvageListN})"
+        wdth=${#salvageListN}
+        printFormBar=" copying data from SCRATCH (%${wdth}d/${salvageListN})"
         dpctrl[1]=${salvageListN}
         q=0; while [ $q -lt ${salvageListN} ]; do
           cp ${SCRATCH}/${scratch_JB}/${salvageList[$q]} .
           (( q++ ))
-          dpctrl[0]=${i}
+          dpctrl[0]=${q}
           dpctrl[3]=`printf "${printFormBar}" ${q}`
           display_progres
         done
