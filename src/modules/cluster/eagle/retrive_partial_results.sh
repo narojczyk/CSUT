@@ -56,7 +56,8 @@ echo " Log to file: ${_YEL}${_BLD}${logFileName}${_RST} on JOBSTARTER"
 
 # Get list of terminated jobs
 if [ ${useSQL} -eq 1 ]; then
-  TJlist=(`${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'terminated';"`);
+  SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE STATUS LIKE 'terminated';"
+  TJlist=(`SQLconnect "${SQLQUERRY}"`);
 else
   # Get the list of jobs to retrive based on the scratch dir inspection
   if [ ! $1 ]; then 
@@ -96,8 +97,9 @@ while [ $i -lt ${TJCount} ]; do
 
     # get job's old ID based on files from previous run
     jobID=`ls -1 JOB_[0-9]*.[oe][ur][rt] 2>/dev/null | sed 's/JOB_\([0-9]*\).[oe].*$/\1/' | sort -u | tail -n 1`
-    if [ ! -n "${jobID}" ] && [ ${useSQL} -eq 1 ]; then
-      jobID=`${SQL} ${SQLDB} "SELECT JOBID FROM JOBS WHERE JOBDIR LIKE '${job}';"`
+    if [ ! -n "${jobID}" ]; then
+      SQLQUERRY="SELECT JOBID FROM ${SQLTABLE} WHERE JOBDIR LIKE '${job}';"
+      jobID=`SQLconnect "${SQLQUERRY}"`
     fi
 
     if [ ! -n "${jobID}" ]; then
@@ -181,20 +183,9 @@ while [ $i -lt ${TJCount} ]; do
         shaEC=$?
         if [ $shaEC -eq 0 ]; then
           # Flag job as reconfigured
-          if [ ${useSQL} -ne 0 ]; then
-            sqlUpdateStatus=5
-            sqlWatchDog=0
-            while [ ${sqlUpdateStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
-              ${SQL} ${SQLDB} "UPDATE ${SQLTABLE} SET STATUS='reconfigured' WHERE JOBDIR LIKE '${job}' ;"
-              sqlUpdateStatus=$?
-              if [ $sqlUpdateStatus -ne 0 ]; then
-                (( sqlWatchDog++ ))
-                sleep 1
-              fi
-            done
-          else
-            echo " ${job} RECONFIGURED" >> $log
-          fi
+          SQLQUERRY="UPDATE ${SQLTABLE} SET STATUS='reconfigured' WHERE JOBDIR LIKE '${job}';"
+          SQLconnect "${SQLQUERRY}"
+          echo " ${job} RECONFIGURED" >> $log
 
           # Salvage copied with no errors. Proceed with job configuration
           printf "${G_ok}"

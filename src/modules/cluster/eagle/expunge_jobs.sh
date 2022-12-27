@@ -59,12 +59,10 @@ cd ${JOBSTARTER}
 
 # Get the list of directories
 if [ ${useSQL} -eq 1 ]; then
-  jobSelArchive=(\
-    `${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE (STATUS LIKE 'claimed' AND JOBDIR LIKE '%_001' );" | sed 's/^/del_/' |\
-     sort -u` )
-  jobSelDelete=(\
-    `${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE (STATUS LIKE 'claimed' AND JOBDIR NOT LIKE '%_001' );" | sed 's/^/del_/' |\
-     sort -u` )
+  SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE (STATUS LIKE 'claimed' AND JOBDIR LIKE '%_001' );"
+  jobSelArchive=( `SQLconnect "${SQLQUERRY}" | sed 's/^/del_/' | sort -u` )
+  SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE (STATUS LIKE 'claimed' AND JOBDIR NOT LIKE '%_001' );"
+  jobSelDelete=( `SQLconnect "${SQLQUERRY}" | sed 's/^/del_/' | sort -u` )
 else
   jobSelArchive=(`ls -1d del_20??-${mask}*_001 2> /dev/null`)
   jobSelDelete=(`ls -1d del_20??-${mask}*_[0-9][0-9][0-9] 2>/dev/null | grep -v "_001$"`)
@@ -88,18 +86,8 @@ i=0; while [ $i -lt ${jobSelArchiveN} ]; do
   display_progres
 
   # Remove the entry from database
-  if [ ${useSQL} -ne 0 ]; then
-    sqlRemoveStatus=5
-    sqlWatchDog=0
-    while [ ${sqlRemoveStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
-      ${SQL} ${SQLDB} "DELETE FROM JOBS WHERE JOBDIR LIKE '${JB#del_}';"
-      sqlRemoveStatus=$?
-      if [ $sqlRemoveStatus -ne 0 ]; then
-        (( sqlWatchDog++ ))
-        sleep 1
-      fi
-    done
-  fi
+  SQLQUERRY="DELETE FROM ${SQLTABLE} WHERE JOBDIR LIKE '${JB#del_}';"
+  SQLconnect "${SQLQUERRY}"
 
   if [ -d ${JB} ]; then
     # Clean directory before archiving0
@@ -127,18 +115,8 @@ i=0; while [ $i -lt ${jobSelDeleteN} ]; do
   display_progres
 
   # Remove the entry from database
-  if [ ${useSQL} -ne 0 ]; then
-    sqlRemoveStatus=5
-    sqlWatchDog=0
-    while [ ${sqlRemoveStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
-      ${SQL} ${SQLDB} "DELETE FROM JOBS WHERE JOBDIR LIKE '${JB#del_}';"
-      sqlRemoveStatus=$?
-      if [ $sqlRemoveStatus -ne 0 ]; then
-        (( sqlWatchDog++ ))
-        sleep 1
-      fi
-    done
-  fi
+  SQLQUERRY="DELETE FROM ${SQLTABLE} WHERE JOBDIR LIKE '${JB#del_}';"
+  SQLconnect "${SQLQUERRY}"
 
   if [ -d ${JB} ]; then
     rm -rf ${JB} 2>/dev/null

@@ -64,7 +64,7 @@ jobIDs=(\
 jobIDsN=${#jobIDs[@]}
 
 # Query SQL for recorded jobs
-SQLQUERRY="SELECT COUNT(ID) FROM JOBS WHERE STATUS LIKE 'started';"
+SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE STATUS LIKE 'started';"
 SQLJobCount=`SQLconnect "${SQLQUERRY}"`
 
 if [ $VERBOSE -eq 1 ]; then
@@ -133,7 +133,7 @@ if [ $deadJBsCount -ne 0 ]; then
     dJB_ID=`echo $dJB | sed -e 's/SLID//' -e 's/_.*$//'`
     dJB_JD=`echo $dJB | sed 's/^SLID[0-9]*_//'`
 
-    SQLQUERRY="SELECT ID FROM JOBS WHERE (JOBID=${dJB_ID} OR JOBDIR LIKE '${dJB_JD}' );"
+    SQLQUERRY="SELECT ID FROM ${SQLTABLE} WHERE (JOBID=${dJB_ID} OR JOBDIR LIKE '${dJB_JD}' );"
     sqlID=`SQLconnect "${SQLQUERRY}"`
 
     if [ ${#sqlID} -gt 0 ]; then
@@ -180,7 +180,7 @@ if [ $liveJBsCount -ne 0 ]; then
     lvJB_ID=`echo $lvJB | sed -e 's/SLID//' -e 's/_.*$//'`
     lvJB_JD=`echo $lvJB | sed 's/^SLID[0-9]*_//'`
 
-    SQLQUERRY="SELECT ID FROM JOBS WHERE (JOBID=${lvJB_ID} OR JOBDIR LIKE '${lvJB_JD}' );"
+    SQLQUERRY="SELECT ID FROM ${SQLTABLE} WHERE (JOBID=${lvJB_ID} OR JOBDIR LIKE '${lvJB_JD}' );"
     sqlID=`SQLconnect "${SQLQUERRY}"`
 
     if [ ${#sqlID} -gt 0 ] && [ -d ${lvJB} ]; then

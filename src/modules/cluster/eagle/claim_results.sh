@@ -65,10 +65,13 @@ fi
 
 # Extract all the different dates
 if [ ${useSQL} -eq 1 ]; then
-  sets=(`${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'finished';" |\
+  SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE STATUS LIKE 'finished';"
+  sets=(`SQLconnect "${SQLQUERRY}" |\
     sed 's/_.*_\([0-9][0-9][0-9][0-9]\)_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]_.*/_\1/' | sort -u`)
-  fin_count=`${SQL} ${SQLDB} "SELECT COUNT(ID) FROM JOBS WHERE STATUS LIKE 'finished';"`
-  fail_count=`${SQL} ${SQLDB} "SELECT COUNT(ID) FROM JOBS WHERE STATUS LIKE 'failed';"`
+  SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE STATUS LIKE 'finished';"
+  fin_count=`SQLconnect "${SQLQUERRY}"`
+  SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE STATUS LIKE 'failed';"
+  fail_count=`SQLconnect "${SQLQUERRY}"`
 else
   sets=(`ls -1d 20??-${mask}* | grep -v "\." |\
     sed 's/\(20..-..-..\)_.*_\([0-9][0-9][0-9][0-9]\)_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]_.*/\1_\2/' |\
@@ -93,9 +96,10 @@ if [ $fin_count -gt 0 ]; then
     s=`echo ${sets[$j]} | cut -d '_' -f 1` # Date signature
     n=`echo ${sets[$j]} | cut -d '_' -f 2` # N-particles signature
     if [ $useSQL -eq 1 ]; then
-      jobsInSet=`${SQL} ${SQLDB} "SELECT COUNT(ID) FROM JOBS WHERE JOBDIR LIKE '${s}%_${n}_%';"`
-      setFinCount=`${SQL} ${SQLDB} \
-        "SELECT COUNT(ID) FROM JOBS WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"`
+      SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE JOBDIR LIKE '${s}%_${n}_%';"
+      jobsInSet=`SQLconnect "${SQLQUERRY}"`
+      SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"
+      setFinCount=`SQLconnect "${SQLQUERRY}"`
     else
       jobsInSet=`ls -1d ${s}*_${n}_* | wc -l`
       setFinCount=`ls -1d ${s}*_${n}_*/*finished* 2>/dev/null | wc -l`
@@ -134,8 +138,8 @@ while [ $i -le $setIDend ]; do
   echo -ne " Preparing the list of jobs ... "\\r
 
   if [ $useSQL -eq 1 ]; then
-    jobSel=(\
-    `${SQL} ${SQLDB} "SELECT JOBDIR FROM JOBS WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"`)
+    SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"
+    jobSel=( `SQLconnect "${SQLQUERRY}"` )
   else
     jobSel=(`find ./${s}*_${n}_* -iname "JOB*finished.txt" |\
       sed 's;/JOB.*;;' | sed 's;^\./;;' |  sort`);
@@ -219,17 +223,8 @@ while [ $i -le $setIDend ]; do
       
       ### Log into SQL if enabled
       if [ $useSQL -eq 1 ]; then
-      sqlUpdateStatus=5
-      sqlWatchDog=0
-        while [ ${sqlUpdateStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_SEC ]; do
-          ${SQL} ${SQLDB} \
-            "UPDATE ${SQLTABLE} SET STATUS='claimed' WHERE JOBDIR LIKE '${JB}';"
-          sqlUpdateStatus=$?
-          if [ $sqlUpdateStatus -ne 0 ]; then 
-            (( sqlWatchDog++ ))
-            sleep 1
-          fi
-        done
+        SQLQUERRY="UPDATE ${SQLTABLE} SET STATUS='claimed' WHERE JOBDIR LIKE '${JB}';"
+        SQLconnect "${SQLQUERRY}"
       fi
 
       (( cpyCount++ ))

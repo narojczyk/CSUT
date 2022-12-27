@@ -72,21 +72,23 @@ jobIDsN=${#jobIDs[@]}
 # Get the list jobs that have been salvaged and reconfigured
 if [ ${useSQL} -eq 1 ]; then
   jobsToExpire=( )
-  jobsReconfigured=(\
-    `${SQL} ${SQLDB}\
-      "SELECT JOBDIR FROM JOBS WHERE STATUS LIKE 'reconfigured';" `)
+  SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE STATUS LIKE 'reconfigured';"
+  jobsReconfigured=( `SQLconnect "${SQLQUERRY}"` )
   jobsReconfiguredN=${#jobsReconfigured[@]}
   dpctrl[1]=${jobsReconfiguredN}
   WDTH=${#jobsReconfiguredN}
   printFormBar=" %s (%${WDTH}d/${jobsReconfiguredN})"
   i=0; while [ $i -lt ${jobsReconfiguredN} ]; do
     JB_Rec=${jobsReconfigured[$i]}
-    jobScratchDir=`${SQL} ${SQLDB}\
-      "SELECT SCRATCHDIR FROM JOBS WHERE JOBDIR LIKE '${JB_Rec}';" `
+    SQLQUERRY="SELECT SCRATCHDIR FROM ${SQLTABLE} WHERE JOBDIR LIKE '${JB_Rec}';"
+    jobScratchDir=`SQLconnect "${SQLQUERRY}"`
     if [ ${#jobScratchDir} -eq 0 ]; then
-      jobScratchDir=`ls -1d SLID[0-9]*_${JB_Rec}`
+      jobScratchDir=`ls -1d SLID[0-9]*_${JB_Rec} 2>/dev/null`
     fi
-    jobsToExpire=( ${jobsToExpire[@]} $jobScratchDir )
+    
+    if [ ${#jobScratchDir} -gt 0 ]; then
+      jobsToExpire=( ${jobsToExpire[@]} $jobScratchDir )
+    fi
     (( i++ ))
     dpctrl[0]=${i}
     dpctrl[3]=`printf "${printFormBar}" "Prepare the list of SCRATCH directories" ${i}`
@@ -158,8 +160,8 @@ if [ "${userConfirm}" == "y" ] || [ "${userConfirm}" == "Y" ]; then
     if [ -d ${JBtoExp} ]; then 
       rm -r $JBtoExp
       if [ ${useSQL} -ne 0 ]; then
-        ${SQL} ${SQLDB} \
-          "UPDATE ${SQLTABLE} SET SCRATCHDIR='' WHERE JOBDIR LIKE '${JBtoExp#SLID[0-9]*_}';"
+        SQLQUERRY="UPDATE ${SQLTABLE} SET SCRATCHDIR='' WHERE JOBDIR LIKE '${JBtoExp#SLID[0-9]*_}';"
+        SQLconnect "${SQLQUERRY}"
       fi
     else
       echo "${JBtoExp} directory NOT found"
