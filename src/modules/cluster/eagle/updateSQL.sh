@@ -183,21 +183,20 @@ if [ $liveJBsCount -ne 0 ]; then
     SQLQUERRY="SELECT ID FROM JOBS WHERE (JOBID=${lvJB_ID} OR JOBDIR LIKE '${lvJB_JD}' );"
     sqlID=`SQLconnect "${SQLQUERRY}"`
 
-    if [ ${#sqlID} -gt 0 ]; then
-        # The job has been found in the register
+    if [ ${#sqlID} -gt 0 ] && [ -d ${lvJB} ]; then
+      # The job has been found in the register
+      # Check progress of the live job
+      target=`cat ${lvJB}/*.ini |\
+        grep "Number of data blocks" | sed 's/^.*:\ *//'`
+      present=`ls -1d ${lvJB}/*part* 2>/dev/null |wc -l`
+      lvJB_prog=`bc -l <<< $present/$target |\
+        sed -e 's/00*$/0/' -e 's/^\./0\./'`
 
-        # Check progress of the live job
-        target=`cat ${lvJB}/*.ini |\
-          grep "Number of data blocks" | sed 's/^.*:\ *//'`
-        present=`ls -1d ${lvJB}/*part* 2>/dev/null |wc -l`
-        lvJB_prog=`bc -l <<< $present/$target |\
-          sed -e 's/00*$/0/' -e 's/^\./0\./'`
-
-        # Update SQL record
-        SQLQUERRY="UPDATE ${SQLTABLE} SET PROGRES='${lvJB_prog}', STATUS='started' WHERE ID=${sqlID};"
-        SQLconnect "${SQLQUERRY}"
-      else
-        (( notFoundInSQL++ ))
+      # Update SQL record
+      SQLQUERRY="UPDATE ${SQLTABLE} SET PROGRES='${lvJB_prog}', STATUS='started' WHERE ID=${sqlID};"
+      SQLconnect "${SQLQUERRY}"
+    else
+      (( notFoundInSQL++ ))
     fi
     (( i++ ))
 

@@ -43,7 +43,7 @@ SQLconnect(){
     sqlActionStatus=5
     sqlWatchDog=0
     while [ ${sqlActionStatus} -ne 0 ] && [ $sqlWatchDog -lt $WD_LIMIT_COUNT ]; do
-      ${SQL} ${SQLDB} "${SQLQUERRY}" 2 >> ${log:-/dev/null}
+      ${SQL} ${SQLDB} "${SQLQUERRY}" 2>> ${log:-/dev/null}
       sqlActionStatus=$?
       if [ $sqlActionStatus -ne 0 ]; then
         (( sqlWatchDog++ ))
