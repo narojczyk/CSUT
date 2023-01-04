@@ -159,6 +159,7 @@ while [ $i -lt ${TJCount} ]; do
       # Read list of files to copy from scratch
       salvageList=(`cat ${salvageListFile} | sed 's;^.*/;;'`)
       salvageListN=${#salvageList[@]}
+      setAsReconfigured=0
       if [ $salvageListN -ne 0 ]; then
         cd ${SCRATCH}/${scratch_JB}
         sha1sum ${salvageList[@]} > ${chksumFile}
@@ -182,10 +183,8 @@ while [ $i -lt ${TJCount} ]; do
         sha1sum -c ${chksumFile} --quiet >> $log 2>&1
         shaEC=$?
         if [ $shaEC -eq 0 ]; then
-          # Flag job as reconfigured
-          SQLQUERRY="UPDATE ${SQLTABLE} SET STATUS='reconfigured' WHERE JOBDIR LIKE '${job}';"
-          SQLconnect "${SQLQUERRY}"
-          echo " ${job} RECONFIGURED" >> $log
+          # Flag the job status to be set as reconfigured
+          setAsReconfigured=1 
 
           # Salvage copied with no errors. Proceed with job configuration
           printf "${G_ok}"
@@ -196,8 +195,20 @@ while [ $i -lt ${TJCount} ]; do
         fi
 
       else
-        echo " No previous results to salvage for this job" 
-        echo " No previous results to salvage for this job" >> $log
+        echo " No new results to salvage for this job" 
+        echo " No new results to salvage for this job" >> $log
+        jobIDactive=`squeue -u ${USER} | grep ${jobID}`
+        if [ ${#jobIDactive} -eq 0 ]; then
+          # Flag the job status to be set as reconfigured
+          setAsReconfigured=1 
+        fi
+      fi
+
+      if [ $setAsReconfigured -eq 1 ]; then
+        # Flag job as reconfigured
+        SQLQUERRY="UPDATE ${SQLTABLE} SET STATUS='reconfigured' WHERE JOBDIR LIKE '${job}';"
+        SQLconnect "${SQLQUERRY}"
+        echo "${job} RECONFIGURED" >> $log
       fi
     
     else
