@@ -20,8 +20,10 @@ source ${CSUT_CORE_INC}/IOfunctions/basic_output.sh
 # Surce top-level SQL functions
 source ${CSUT_CORE_INC}/SQLfunctions/SQL_basics.sh
 
-while getopts sv argv; do
+while getopts l:rsv argv; do
   case "${argv}" in
+    l) TJlistLimit=${OPTARG} ;;
+    r) reverseList=1 ;;
     s) useSQL=1 ;;
     v) VERBOSE=0 ;;
   esac
@@ -56,7 +58,11 @@ echo " Log to file: ${_YEL}${_BLD}${logFileName}${_RST} on JOBSTARTER"
 
 # Get list of terminated jobs
 if [ ${useSQL} -eq 1 ]; then
-  SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE STATUS LIKE 'terminated';"
+  if [ ${reverseList:-0} -eq 1 ]; then
+    SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE STATUS LIKE 'terminated' ORDER BY JOBDIR DESC;"
+  else
+    SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE STATUS LIKE 'terminated';"
+  fi
   TJlist=(`SQLconnect "${SQLQUERRY}"`);
 else
   # Get the list of jobs to retrive based on the scratch dir inspection
@@ -68,7 +74,11 @@ else
     TJlist=( "$@" )
   fi
 fi
-TJCount=${#TJlist[@]}
+if [ ${TJlistLimit:-0} -gt 0 ]; then
+  TJCount=${TJlistLimit}
+else
+  TJCount=${#TJlist[@]}
+fi
 
 if [ $TJCount -eq 0 ]; then
   echo " No job candidates to retrieve files from."
