@@ -74,10 +74,10 @@ else
     TJlist=( "$@" )
   fi
 fi
-if [ ${TJlistLimit:-0} -gt 0 ]; then
+
+TJCount=${#TJlist[@]}
+if [ ${TJlistLimit:-0} -gt 0 ] && [ ${TJlistLimit:-0} -le ${TJCount} ]; then
   TJCount=${TJlistLimit}
-else
-  TJCount=${#TJlist[@]}
 fi
 
 if [ $TJCount -eq 0 ]; then
