@@ -1,6 +1,7 @@
 #!/bin/bash
 ## Author: Jakub W. Narojczyk <narojczyk@ifmpan.poznan.pl>
 clear
+source ${HOME}/.bashrc
 SNAME=`echo $(basename $BASH_SOURCE)| sed 's/\.sh//'`
 
 ## Variables set automatically by configure.sh. ###############################
@@ -65,13 +66,20 @@ if [ ${useSQL} -eq 1 ]; then
   fi
   TJlist=(`SQLconnect "${SQLQUERRY}"`);
 else
+  CMDLine=(`echo "${@}" | sed 's/-[a-z][\ 0-9]*//g' | sed 's/SLID[0-9]*_//g'`)
   # Get the list of jobs to retrive based on the scratch dir inspection
-  if [ ! $1 ]; then 
-    echo " ${_RED}Pass the list of jobs to retrive as command line arguments${_RST}"
-    exit 1
+  if [ ${#CMDLine[@]} -eq 0 ]; then 
+    cd ${SCRATCH}
+    # This will select only odd lines
+    SelectLines="| sed 'n; d'"
+    if [ ${reverseList:-0} -eq 1 ]; then
+      # This will select even lines
+      SelectLines="| sed '1d; n; d'"
+    fi
+    TJlist=(`eval "ls -1d SLID* ${SelectLines}"  | sed 's/^SLID[0-9]*_//'`)
   else
     # TODO: Check if the job is running or pending - if so, remove from the list
-    TJlist=( "$@" )
+    TJlist=( "${CMDLine[@]}" )
   fi
 fi
 
