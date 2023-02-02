@@ -66,7 +66,7 @@ if [ ${useSQL} -eq 1 ]; then
   fi
   TJlist=(`SQLconnect "${SQLQUERRY}"`);
 else
-  CMDLine=(`echo "${@}" | sed 's/-[a-z][\ 0-9]*//g' | sed 's/SLID[0-9]*_//g'`)
+  CMDLine=(`echo "${@}" | sed 's/^-[a-z][\ 0-9]*//g' | sed 's/SLID[0-9]*_//g'`)
   # Get the list of jobs to retrive based on the scratch dir inspection
   if [ ${#CMDLine[@]} -eq 0 ]; then 
     cd ${SCRATCH}
