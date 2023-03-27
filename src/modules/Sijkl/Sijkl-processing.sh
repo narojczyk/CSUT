@@ -15,6 +15,10 @@ CORE="${CSUT_CORE}/modules/Sijkl"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
+# Script variables
+NlinesLimit=""
+graphResults=1;
+
 # Display greetings and define output messages
 source ${CSUT_CORE_INC}/header.sh \
   "${_BLD}${_PRP}Utility for Sijkl calculations from MC NpT simulations in batch mode${_RST}"
@@ -49,7 +53,7 @@ source ${INITIALS}/functions.sh
 
 # Process commanline options
 source ${INITIALS}/process_argv.sh $@
-  
+
 # Apply commanline settings
 source ${INITIALS}/apply_argv.sh
 
@@ -122,14 +126,19 @@ while [ $i -le $dset_end_id ]; do
   
   source ${MODULES}/sub_results_postprocessing.sh
 
-  # Prepare plots for processed data
-  source ${MODULES}/sub_plotting_data.sh
+  if [ $graphResults -eq 1 ]; then
+    # Prepare plots for processed data
+    source ${MODULES}/sub_plotting_data.sh
+
+    # Clean gnuplot files for this data set
+    rm plot*gplt
+
+    # Use Latex and imagemagick to get images in final formats
+    source ${MODULES}/sub_image_postprocessing.sh
+  fi
 
   # Clean the input files for this data set
-  rm *dat [^2]*csv 20*.bz2 plot*gplt $cacheInfo
-
-  # Use Latex and imagemagick to get images in final formats
-  source ${MODULES}/sub_image_postprocessing.sh
+  rm *dat [^2]*csv 20*.bz2 [^S]*.ini $cacheInfo
 
   # Proceed with next data set
   (( i++ ))

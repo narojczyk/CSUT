@@ -47,6 +47,11 @@ else
   pressure=`cat ${inifile} | grep "^p\*"  | sed 's/^.*:\ //'`
 fi
 
+# Limit Nlines with getopts parameter
+if [ ${#NlinesLimit} -gt 0 ] && [ $Nlines -gt $NlinesLimit ]; then
+  Nlines=${NlinesLimit}
+fi
+
 if [ ! $pressure ] || [ ! $Nlines ] || [ ! $Rlines ]; then
   printf " [%s] %s: One or more key variables for %s are undetermined.\n" \ 
     $iam $R_err $binconfig

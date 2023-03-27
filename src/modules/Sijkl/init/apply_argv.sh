@@ -18,7 +18,7 @@ fi
 if [ $plotWithoutExcluded -ne 0 ]; then
   if [ -z ${excludeIDsFile:+x} ] || \
      [ ! -f $excludeIDsFile ] || [ ! -r $excludeIDsFile ]; then
-    printf "\n [%s] Exclusion file not specified of not readable\n" $R_err
+    printf "\n [%s] Exclusion file not specified or not readable\n" $R_err
     exit 1
   fi
 fi
