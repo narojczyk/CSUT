@@ -12,7 +12,7 @@ input_pattern=`ls [^2]*s*[^l].csv | head -n 1 | sed 's/s[0-9]\{4\}/s%04d/'`
 primary_info=0
 csm=`printf "%04d" 1`
 datfile=`ls *s${csm}.dat 2>> $logFile`
-if [ -f $datfile ] ; then
+if [ ${#datfile} -gt 0 ] && [ -f $datfile ] ; then
   primary_info=1
   echo "firstDatFile=${datfile}" >> $cacheInfo
 fi
@@ -48,8 +48,25 @@ else
 fi
 
 # Limit Nlines with getopts parameter
-if [ ${#NlinesLimit} -gt 0 ] && [ $Nlines -gt $NlinesLimit ]; then
-  Nlines=${NlinesLimit}
+if [ ${#NlinesLimit} -gt 0 ]; then
+  if [ "$NlinesLimit" == "auto" ]; then
+    # This is temporary hack. The binary should figure this out on its own
+    ff=(`ls -1 *_s[0-9]*.csv | grep -v full`)
+    NlinesMinimal=`cat ${ff[0]} | wc -l`
+    j=0; while [ $j -lt ${#ff[@]} ]; do
+      f=${ff[$j]}
+      n=`cat ${f} | wc -l`
+      if [ $n -lt $NlinesMinimal ]; then
+        NlinesMinimal=$n
+      fi
+      (( j++ ))
+    done
+    echo " Auto calculated setting -N=$NlinesMinimal"
+    Nlines=$NlinesMinimal
+
+  elif [ $Nlines -gt $NlinesLimit ]; then
+    Nlines=${NlinesLimit}
+  fi
 fi
 
 if [ ! $pressure ] || [ ! $Nlines ] || [ ! $Rlines ]; then

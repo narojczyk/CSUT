@@ -13,7 +13,9 @@ for i in "$@"; do
       # Test if parameter passed is a valid number
       re='^[0-9]+$'
       if [ ${#NlinesLimit} -gt 0 ] && ! [[ $NlinesLimit =~ $re ]] ; then
-        echo "ERR: -N is not a number" >&2; exit 1
+        if [ "$NlinesLimit" != "auto" ]; then
+          echo "ERR: -N is not a number" >&2; exit 1
+        fi
       fi
       shift # past argument=value
       ;;
