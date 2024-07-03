@@ -38,10 +38,22 @@ load_config(){
 }
 
 echo_usage(){
-  echo -e "\n $SNAME usage options:"
-  echo -e " -s | --settings\n\tOutput settings" # TODO check this
-  echo -e " -o=MODE | --operation-mode=MODE\n\tSet MODE"
-  echo -e " -c=FILE | --config-file=FILE\n\tWrite default config to FILE"
-  echo -e " -l=FILE | --load-config-file=FILE\n\tLoad user config from FILE"
+  echo -e "\n $SNAME usage options:\n"
+
+  echo -e " -g | --skip-graphics"
+    echo -e "\tOnly process MC simulation data and calculate elastic compliance (S)" \
+     "and elastic constants (B) matrices. Do not plot any results.\n"
+
+#   echo -e " -s | --settings\n\tOutput settings" # TODO check this
+  echo -e " -o=MODE | --operation-mode=MODE\n\tCurrently supported modes:"
+  echo -e "\t'aux' write to auxilary SCRATCH1 directory (env. var.)"
+  echo -e "\t'dev' run in debug directory\n"
+
+  echo -e " -c=FILE | --config-file=FILE"
+  echo -e "\tWrite default config to FILE\n"
+
+  echo -e " -l=FILE | --load-config-file=FILE"
+  echo -e "\tLoad user config from FILE\n"
+
   echo -e " -h | --help\n\tPrint this message"
 }
