@@ -34,7 +34,7 @@ case "$repoSource" in
     ;;
 esac
 
-if [ -d $newRepoPath ]; then
+if [ ${#newRepoPath} -gt 0 ] && [ -d $newRepoPath ]; then
   SIMDATA=$newRepoPath
 else
   comment="[`date +"%F_%H-%M-%S"`] ($SNAME unit `echo $(basename $BASH_SOURCE)`) Repository $newRepoPath does not exist"
