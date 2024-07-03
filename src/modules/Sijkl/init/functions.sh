@@ -41,7 +41,7 @@ echo_usage(){
   echo -e "\n $SNAME usage options:\n"
 
   echo -e " -g | --skip-graphics"
-    echo -e "\tOnly process MC simulation data and calculate elastic compliance (S)" \
+  echo -e "\tOnly process MC simulation data and calculate elastic compliance (S)" \
      "and elastic constants (B) matrices. Do not plot any results.\n"
 
 #   echo -e " -s | --settings\n\tOutput settings" # TODO check this
@@ -61,4 +61,12 @@ echo_usage(){
   echo -e "\tLoad user config from FILE\n"
 
   echo -e " -h | --help\n\tPrint this message"
+}
+
+log_comment(){
+  if [ -z ${logFile:+x} ]; then
+    echo $1
+  else
+    echo $1 >> $logFile
+  fi
 }

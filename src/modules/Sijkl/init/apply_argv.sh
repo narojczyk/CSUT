@@ -14,11 +14,7 @@ case "$opMode" in
     *)
     if [ ${#opMode} -gt 0 ]; then
       comment="[`date +"%F_%H-%M-%S"`] ($SNAME unit `echo $(basename $BASH_SOURCE)`) Current value for opMode=$opMode has no effect"
-      if [ -z ${logFile:+x} ]; then
-          echo $comment
-      else
-          echo $comment >> $logFile
-      fi
+      log_comment "$comment"
     fi
       ;;
 esac
@@ -32,17 +28,16 @@ case "$repoSource" in
   "external" )
     newRepoPath="/mdeia/external/work/sim/data"
     ;;
+  *)
+    newRepoPath=""
+    ;;
 esac
 
 if [ ${#newRepoPath} -gt 0 ] && [ -d $newRepoPath ]; then
   SIMDATA=$newRepoPath
-else
-  comment="[`date +"%F_%H-%M-%S"`] ($SNAME unit `echo $(basename $BASH_SOURCE)`) Repository $newRepoPath does not exist"
-  if [ -z ${logFile:+x} ]; then
-    echo $comment
-  else
-    echo $comment >> $logFile
-  fi
+elif [ ${#newRepoPath} -eq 0 ] || [ ! -d $newRepoPath ]; then
+  comment="[`date +"%F_%H-%M-%S"`] ($SNAME unit `echo $(basename $BASH_SOURCE)`) Repository $repoSource does not exist"
+  log_comment "$comment"
 fi
 
 
