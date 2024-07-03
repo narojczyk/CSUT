@@ -49,6 +49,11 @@ echo_usage(){
   echo -e "\t'aux' write to auxilary SCRATCH1 directory (env. var.)"
   echo -e "\t'dev' run in debug directory\n"
 
+  echo -e " -r=REPO |--repository=REPO"
+  echo -e "\t'archive' swicth repository to \$HOME/archive/work/sim/data"
+  echo -e "\t'external' swicth repository to /media/external/work/sim/data"
+  echo -e "\tother values or not cpecified will default to \$HOME/main/work/sim/data"
+
   echo -e " -c=FILE | --config-file=FILE"
   echo -e "\tWrite default config to FILE\n"
 

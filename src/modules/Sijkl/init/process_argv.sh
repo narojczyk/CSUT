@@ -23,6 +23,10 @@ for i in "$@"; do
       opMode="${i#*=}"
       shift # past argument=value
       ;;
+    -r=*|--repository=*)
+      repoSource="${i#*=}"
+      shift # past argument=value
+      ;;
     -s|--settings)
       settingsOutput=1
       shift # past argument with no value
