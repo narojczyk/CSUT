@@ -26,12 +26,13 @@ if [ ! -f $BINARYDIR/$defaultBinary ]; then
   if [ $TbinN -gt 1 ]; then
     # If multiple binaries found show list and wait for selection
     printf "\n %-60s \n" "Select binary for calculations"
+    printf "   binaries found in %s\n" $BINARYDIR
     
     i=0
     while [ $i -lt $TbinN ]; do
       bin_info=`ls -l $BINARYDIR/${Tbin[$i]} | sed 's/\/.*$//' | \
                 eval "sed 's/^.*${USER}\ *[0-9]*//'"`
-      printf "\t[%d] %-18s\t(%s)\n" $i ${Tbin[$i]} "$bin_info"
+      printf "\t[%d] (%s) %-18s\n" $i "$bin_info" ${Tbin[$i]}
       (( i++ ))
     done
 
