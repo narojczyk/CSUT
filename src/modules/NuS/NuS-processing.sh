@@ -15,6 +15,9 @@ CORE="${CSUT_CORE}/modules/NuS"
 # Surce top-level utility variables
 source ${CSUT_CORE_INC}/settings/constants.sh
 
+# Surce top-level utility functions
+source ${CSUT_CORE_INC}/IOfunctions/log_and_configs.sh
+
 # Script variables
 
 
