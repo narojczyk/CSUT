@@ -1,5 +1,7 @@
 #!/bin/bash
 
+alternateRepositoryFlag=0
+
 # Running mode flags
 opMode=""
 loadConfig=0
