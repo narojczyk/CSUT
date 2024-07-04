@@ -64,9 +64,10 @@ echo_usage(){
 }
 
 log_comment(){
+  msg2log="[`date +"%F %H:%M:%S"`] ($SNAME unit $1) $2"
   if [ -z ${logFile:+x} ]; then
-    echo $1
+    echo $msg2log
   else
-    echo $1 >> $logFile
+    echo $msg2log >> $logFile
   fi
 }

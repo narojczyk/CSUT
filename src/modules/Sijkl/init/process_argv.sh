@@ -24,6 +24,7 @@ for i in "$@"; do
       shift # past argument=value
       ;;
     -r=*|--repository=*)
+      alternateRepositoryFlag=1
       repoSource="${i#*=}"
       shift # past argument=value
       ;;

@@ -1,5 +1,7 @@
 #!/bin/bash
 
+thisUnitBaseName=`echo $(basename $BASH_SOURCE)`
+
 # Based on the value of opMode set according actions
 case "$opMode" in
     "dev" )
@@ -13,33 +15,35 @@ case "$opMode" in
 
     *)
     if [ ${#opMode} -gt 0 ]; then
-      comment="[`date +"%F_%H-%M-%S"`] ($SNAME unit `echo $(basename $BASH_SOURCE)`) Current value for opMode=$opMode has no effect"
-      log_comment "$comment"
+      comment="Current value for opMode=$opMode has no effect"
+      log_comment "$thisUnitBaseName" "$comment"
     fi
       ;;
 esac
 
 # Based on the value of repoSource set the path to input data repository
-case "$repoSource" in
-  "archive" )
-    newRepoPath="$HOME/archive/work/sim/data"
-    ;;
+if [ $alternateRepositoryFlag -eq 1 ]; then
+  case "$repoSource" in
+    "archive" )
+      newRepoPath="$HOME/archive/work/sim/data"
+      ;;
 
-  "external" )
-    newRepoPath="/mdeia/external/work/sim/data"
-    ;;
-  *)
-    newRepoPath=""
-    ;;
-esac
+    "external" )
+      newRepoPath="/mdeia/external/work/sim/data"
+      ;;
+  esac
 
-if [ ${#newRepoPath} -gt 0 ] && [ -d $newRepoPath ]; then
-  SIMDATA=$newRepoPath
-elif [ ${#newRepoPath} -eq 0 ] || [ ! -d $newRepoPath ]; then
-  comment="[`date +"%F_%H-%M-%S"`] ($SNAME unit `echo $(basename $BASH_SOURCE)`) Repository $repoSource does not exist"
-  log_comment "$comment"
+  if [ ${#repoSource}  -gt 0 ] && \
+     [ ${#newRepoPath} -gt 0 ] && [ -d $newRepoPath ]; then
+    SIMDATA=$newRepoPath
+  elif [ ${#repoSource} -gt 0 ] &&  [ ${#newRepoPath} -eq 0 ]; then
+    comment="Repository $repoSource does not exist"
+    log_comment "$thisUnitBaseName" "$comment"
+  elif [ ${#repoSource} -eq 0 ]; then
+    comment="Value for -r option not recived"
+    log_comment "$thisUnitBaseName" "$comment"
+  fi
 fi
-
 
 # Something with excluding job ids from plotting
 if [ $plotWithoutExcluded -ne 0 ]; then
