@@ -17,6 +17,7 @@ source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Surce top-level utility functions
 source ${CSUT_CORE_INC}/IOfunctions/log_and_configs.sh
+source ${CSUT_CORE_INC}/IOfunctions/check_user_input.sh
 
 # Script variables
 NlinesLimit=""
@@ -67,9 +68,6 @@ DATAREPO="${SIMDATA}/${dataSubRepository}"
 
 # Check required resources
 source ${CSUT_CORE_INC}/settings/check_environment_vars.sh DATAREPO pthInterpretter
-
-#( test for it in the above)
-source ${UTILS}/foo_check_user_input.sh
 
 # Inspect data repository and display contents
 source ${MODULES}/sub_browse_data.sh

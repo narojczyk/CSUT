@@ -17,6 +17,7 @@ source ${CSUT_CORE_INC}/settings/constants.sh
 
 # Surce top-level utility functions
 source ${CSUT_CORE_INC}/IOfunctions/log_and_configs.sh
+source ${CSUT_CORE_INC}/IOfunctions/check_user_input.sh
 
 # Script variables
 
@@ -65,14 +66,12 @@ load_config
 DATAREPO="${SIMRESULTS}/${dataSubRepository}"
 
 # Check required resources
-source ${CSUT_CORE_INC}/settings/check_environment_vars.sh DATAREPO #pthInterpretter
-exit 0
-#( test for it in the above)
-source ${UTILS}/foo_check_user_input.sh
+source ${CSUT_CORE_INC}/settings/check_environment_vars.sh \
+  DATAREPO #pthInterpretter
 
 # Inspect data repository and display contents
 source ${MODULES}/sub_browse_data.sh
-
+exit 0
 # Select binary to use
 source ${MODULES}/sub_select_binary.sh
 
