@@ -73,13 +73,13 @@ source ${CSUT_CORE_INC}/settings/check_environment_vars.sh DATAREPO pthInterpret
 source ${MODULES}/sub_browse_data.sh
 
 # Select binary to use
-source ${MODULES}/sub_select_binary.sh
+source ${CSUT_CORE_INC}/sub_modules/sub_select_binary.sh
 
 # Prepare work directory
 source ${MODULES}/sub_workdir.sh
 
 # Link selected binary
-ln -s $SNPTDIR/$binary 2>> $logFile
+ln -s $BINARYDIR/$binary 2>> $logFile
 
 # Link and extract data
 i=$dset_sta_id

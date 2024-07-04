@@ -8,12 +8,12 @@ CORE_UTILS="${CSUT_CORE_INC}/utils"
 UTILS="${CORE}/utils"
 GPLT="$CORE/gplt"
 HELPERS="$CORE/helper_scripts"
-SNPTDIR="$CODESDIR/SNpT"
+BINARYDIR="$CODESDIR/SNpT"
 
 #   utility programs
 FPB="${CORE_UTILS}/fancypb"
 PYTHON="/usr/bin/python2"
 
-script_dirs=( MODULES INITIALS UTILS GPLT HELPERS SNPTDIR )
+script_dirs=( MODULES INITIALS UTILS GPLT HELPERS BINARYDIR )
 
 
