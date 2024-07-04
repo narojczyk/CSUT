@@ -29,14 +29,6 @@ write_config(){
   echo  "pthInterpretter=${PYTHON}" >> $cfg
 }
 
-load_config(){
-  cfg="${STARTDIR}/${usrConfig}"
-  if [ -f $cfg ] && [ -r $cfg ]; then
-    echo " Loading user settings from $cfg"
-    source $cfg
-  fi
-}
-
 echo_usage(){
   echo -e "\n $SNAME usage options:\n"
 
@@ -61,13 +53,4 @@ echo_usage(){
   echo -e "\tLoad user config from FILE\n"
 
   echo -e " -h | --help\n\tPrint this message"
-}
-
-log_comment(){
-  msg2log="[`date +"%F %H:%M:%S"`] ($SNAME unit $1) $2"
-  if [ -z ${logFile:+x} ]; then
-    echo $msg2log
-  else
-    echo $msg2log >> $logFile
-  fi
 }
