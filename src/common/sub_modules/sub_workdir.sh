@@ -3,10 +3,10 @@
 printf "\n %-60s " "Preparing temporary directory on scratch"
 # Prepare tmp_workdir name
 if [ $debugMode -eq 1 ]; then
-  tmp_workdir=`echo "dev_${hereANDnow}_SNpT_processing"`
+  tmp_workdir=`echo "dev_${hereANDnow}_${binary}_processing"`
 else
   randMarker=${RANDOM}${RANDOM}
-  tmp_workdir=`echo "${hereANDnow}_SNpT_processing_id${randMarker:0:5}"`
+  tmp_workdir=`echo "${hereANDnow}_${binary}_processing_id${randMarker:0:5}"`
 fi
 
 # Create the tmp_workdir in designated scratch folder

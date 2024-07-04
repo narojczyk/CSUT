@@ -74,9 +74,9 @@ source ${MODULES}/sub_browse_data.sh
 
 # Select binary to use
 source ${CSUT_CORE_INC}/sub_modules/sub_select_binary.sh
-exit 0
+
 # Prepare work directory
-source ${MODULES}/sub_workdir.sh
+source ${CSUT_CORE_INC}/sub_modules/sub_workdir.sh
 
 # Link selected binary
 

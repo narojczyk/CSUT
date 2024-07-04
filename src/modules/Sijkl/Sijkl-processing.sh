@@ -76,7 +76,7 @@ source ${MODULES}/sub_browse_data.sh
 source ${CSUT_CORE_INC}/sub_modules/sub_select_binary.sh
 
 # Prepare work directory
-source ${MODULES}/sub_workdir.sh
+source ${CSUT_CORE_INC}/sub_modules/sub_workdir.sh
 
 # Link selected binary
 ln -s $BINARYDIR/$binary 2>> $logFile
