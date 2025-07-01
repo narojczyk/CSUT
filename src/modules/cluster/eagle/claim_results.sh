@@ -151,6 +151,7 @@ while [ $i -le $setIDend ]; do
   
   # Skip the rest of thie loop iteration if smoehow no jobs are found
   if [ ${jobSelN} -eq 0 ]; then
+    (( i++ ))
     continue
   fi
 
