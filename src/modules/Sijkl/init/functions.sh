@@ -29,19 +29,28 @@ write_config(){
   echo  "pthInterpretter=${PYTHON}" >> $cfg
 }
 
-load_config(){
-  cfg="${STARTDIR}/${usrConfig}"
-  if [ -f $cfg ] && [ -r $cfg ]; then
-    echo " Loading user settings from $cfg"
-    source $cfg
-  fi
-}
-
 echo_usage(){
-  echo -e "\n $SNAME usage options:"
-  echo -e " -s | --settings\n\tOutput settings" # TODO check this
-  echo -e " -o=MODE | --operation-mode=MODE\n\tSet MODE"
-  echo -e " -c=FILE | --config-file=FILE\n\tWrite default config to FILE"
-  echo -e " -l=FILE | --load-config-file=FILE\n\tLoad user config from FILE"
+  echo -e "\n $SNAME usage options:\n"
+
+  echo -e " -g | --skip-graphics"
+  echo -e "\tOnly process MC simulation data and calculate elastic compliance (S)" \
+     "and elastic constants (B) matrices. Do not plot any results.\n"
+
+#   echo -e " -s | --settings\n\tOutput settings" # TODO check this
+  echo -e " -o=MODE | --operation-mode=MODE\n\tCurrently supported modes:"
+  echo -e "\t'aux' write to auxilary SCRATCH1 directory (env. var.)"
+  echo -e "\t'dev' run in debug directory\n"
+
+  echo -e " -r=REPO |--repository=REPO"
+  echo -e "\t'archive' swicth repository to \$HOME/archive/work/sim/data"
+  echo -e "\t'external' swicth repository to /media/external/work/sim/data"
+  echo -e "\tother values or not cpecified will default to \$HOME/main/work/sim/data"
+
+  echo -e " -c=FILE | --config-file=FILE"
+  echo -e "\tWrite default config to FILE\n"
+
+  echo -e " -l=FILE | --load-config-file=FILE"
+  echo -e "\tLoad user config from FILE\n"
+
   echo -e " -h | --help\n\tPrint this message"
 }

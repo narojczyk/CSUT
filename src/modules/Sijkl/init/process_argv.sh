@@ -4,8 +4,28 @@
 
 for i in "$@"; do
   case $i in
+    -g|--skip-graphics)
+      graphResults=0
+      shift # past argument with no value
+      ;;
+    -N=*|--limit-input-lines=*)
+      NlinesLimit="${i#*=}"
+      # Test if parameter passed is a valid number
+      re='^[0-9]+$'
+      if [ ${#NlinesLimit} -gt 0 ] && ! [[ $NlinesLimit =~ $re ]] ; then
+        if [ "$NlinesLimit" != "auto" ]; then
+          echo "ERR: -N is not a number" >&2; exit 1
+        fi
+      fi
+      shift # past argument=value
+      ;;
     -o=*|--operation-mode=*)
       opMode="${i#*=}"
+      shift # past argument=value
+      ;;
+    -r=*|--repository=*)
+      alternateRepositoryFlag=1
+      repoSource="${i#*=}"
       shift # past argument=value
       ;;
     -s|--settings)

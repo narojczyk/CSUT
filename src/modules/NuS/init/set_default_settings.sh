@@ -1,13 +1,10 @@
 #!/bin/bash
 
-alternateRepositoryFlag=0
-
 # Running mode flags
-opMode=""
 loadConfig=0
 debugMode=0
 
-showLastN=15 # Display N last entries of data array
+showLastN=25 # Display N last entries of data array
 
 # Default file names
 usrConfig="none"
@@ -23,22 +20,19 @@ SCRATCH=$SCRATCH0
 dataSubRepository="sph3d_NpT_HS"
 
 # Program selection
-defaultBinary="SNpT"
-defaultBinaryMarker="SNpT*"
+defaultBinary="NuS_csut"
+defaultBinaryMarker="NuS*"
 
 # Python interpretter (default setting in declare_environment_vars.sh)
 pthInterpretter=${PYTHON}
 
 # Stage 1 processing constants
-merge_input="false"
 
 # Default parameters for input data
 
 # UI settings
 pbLength=20
 
-# Plot all available data
-plotWithoutExcluded=0
-excludeIDsFile=""
+# Plot settings
 
 return 0

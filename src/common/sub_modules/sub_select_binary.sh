@@ -1,17 +1,16 @@
 #!/bin/bash
 
-iam=`echo $(basename $BASH_SOURCE)| sed 's/\.sh//'`
+thisUnitBaseName=`echo $(basename $BASH_SOURCE)| sed 's/\.sh//'`
 
-if [ ! -f $SNPTDIR/$defaultBinary ]; then
-  Tbin=(`ls -ltd $SNPTDIR/$defaultBinaryMarker 2>> $logFile |\
+if [ ! -f $BINARYDIR/$defaultBinary ]; then
+  Tbin=(`ls -ltd $BINARYDIR/$defaultBinaryMarker 2>> $logFile |\
     grep ^-[-r][-w][x] | sed 's/^.*\///'`)
-  #  grep -v "\." | grep -v ^d | sed 's/^.*\///'`)
   TbinN=${#Tbin[@]}
 
   # Exit with error if no matching binaries found
   if [ $TbinN -eq 0 ]; then
     printf " [%s] %s No binaries found matching search: %s\n" \
-      $iam $R_err $defaultBinaryMarker
+      $thisUnitBaseName $R_err $defaultBinaryMarker
     exit 1
   fi
   
@@ -27,12 +26,13 @@ if [ ! -f $SNPTDIR/$defaultBinary ]; then
   if [ $TbinN -gt 1 ]; then
     # If multiple binaries found show list and wait for selection
     printf "\n %-60s \n" "Select binary for calculations"
+    printf "   binaries found in %s\n" $BINARYDIR
     
     i=0
     while [ $i -lt $TbinN ]; do
-      bin_info=`ls -l $SNPTDIR/${Tbin[$i]} | sed 's/\/.*$//' | \
+      bin_info=`ls -l $BINARYDIR/${Tbin[$i]} | sed 's/\/.*$//' | \
                 eval "sed 's/^.*${USER}\ *[0-9]*//'"`
-      printf "\t[%d] %-18s\t(%s)\n" $i ${Tbin[$i]} "$bin_info"
+      printf "\t[%d] (%s) %-18s\n" $i "$bin_info" ${Tbin[$i]}
       (( i++ ))
     done
 
