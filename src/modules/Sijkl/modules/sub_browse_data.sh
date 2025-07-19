@@ -43,7 +43,7 @@ printf "\n * listing data in %s: \n" $subrepository
 
 # Generate a sorted list of data sets
 #  disregard job numbers and check for different pressure exponents
-Tpexp=(`ls $DATAREPO/$subrepository/20* |\
+Tpexp=(`find $DATAREPO/$subrepository -type f -iname "20*" |\
   sed -e 's/^\/.*\///' -e 's/_[0-9][0-9][0-9]\..*$//' | sort -u |\
    sed 's/^20.*e\([+-][0-9]\)/\1/' | sort -ur`)
 
@@ -51,7 +51,7 @@ Tpexp=(`ls $DATAREPO/$subrepository/20* |\
 i=0
 echo > $sub_local_tmp
 while [ $i -lt ${#Tpexp[@]} ]; do
-  ls -1 $DATAREPO/$subrepository/20*_sd[0-9]*e${Tpexp[$i]}* |\
+  find $DATAREPO/$subrepository -type f -iname "20*_sd[0-9]*e${Tpexp[$i]}*"| sort |\
      sed -e 's/^\/.*\///' -e 's/_[0-9][0-9][0-9]\..*$//' |\
       sort -u >> $sub_local_tmp
   (( i++ ))
@@ -68,7 +68,7 @@ rm $sub_local_tmp
 i=0
 while [ $i -lt $TdsetN ]; do
   printf " [%${w}d] %s (%d)\n" \
-    $i ${Tdset[$i]} `ls -1 $DATAREPO/$subrepository/${Tdset[$i]}* | wc -l` |\
+    $i ${Tdset[$i]} `find $DATAREPO/$subrepository -type f -iname "${Tdset[$i]}*"| sort| wc -l` |\
     sed 's/3DNpT_.*_fcc/\ \.\.\.\ /'
   (( i++ ))
 done
