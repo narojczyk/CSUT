@@ -27,7 +27,7 @@ while [ $j -le $dat_filesN ]; do
   csm=`printf "%04d" $j`
   datfile=${firstDatFile/s[0-9][0-9][0-9][0-9]/s${csm}}
 
-  if [ ${#datfile} -gt 0 ] && [ -f $datfile ]; then
+  if [ ${#datfile} -gt 0 ] && [ -f $datfile ] && [ `<${datfile} wc -l` -gt 0 ]; then
     # Get data lines per file
     Nlines=`cat ${datfile} | grep "MC" |grep -e "cycles"| grep -v "block"  | sed -e 's/^.*\ \ //' -e 's/00$//'`
     # Get number of data 'lines' to reject from file
