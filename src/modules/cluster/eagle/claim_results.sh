@@ -74,7 +74,7 @@ if [ ${useSQL} -eq 1 ]; then
   fail_count=`SQLconnect "${SQLQUERRY}"`
 else
   sets=(`ls -1d 20??-${mask}* | grep -v "\." |\
-    sed 's/\(20..-..-..\)_.*_\([0-9][0-9][0-9][0-9]\)_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]_.*/\1_\2/' |\
+    sed 's/\(20..-..-..\)_.*_\([0-9][0-9][0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)_.*/\1;\2/' |\
     sort -u`)
   fin_count=`find ./20??-${mask}* -iname "JOB*finished.txt" |wc -l`;
   fail_count=`find ./20??-${mask}* -iname "JOB*failed.txt" |wc -l`;
@@ -93,8 +93,8 @@ if [ $fin_count -gt 0 ]; then
   echo -e "\n List of job sets to inspect:"
   j=0
   while [ $j -lt $setsN ]; do
-    s=`echo ${sets[$j]} | cut -d '_' -f 1` # Date signature
-    n=`echo ${sets[$j]} | cut -d '_' -f 2` # N-particles signature
+    s=`echo ${sets[$j]} | cut -d ';' -f 1` # Date signature
+    n=`echo ${sets[$j]} | cut -d ';' -f 2` # N-particles signature
     if [ $useSQL -eq 1 ]; then
       SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE JOBDIR LIKE '${s}%_${n}_%';"
       jobsInSet=`SQLconnect "${SQLQUERRY}"`
@@ -131,8 +131,8 @@ dpctrl=( 0 0 76 ' ' )
 i=$setIDstart;    # Loop over selected sets
 while [ $i -le $setIDend ]; do
 
-  s=`echo ${sets[$i]} | cut -d '_' -f 1` # Date signature
-  n=`echo ${sets[$i]} | cut -d '_' -f 2` # N-particles signature
+  s=`echo ${sets[$i]} | cut -d ';' -f 1` # Date signature
+  n=`echo ${sets[$i]} | cut -d ';' -f 2` # N-particles signature
 
   printf "\n Current job set: [ %${#setsN}d ] %s %s\n" $i ${s} ${n}
   echo -ne " Preparing the list of jobs ... "\\r
