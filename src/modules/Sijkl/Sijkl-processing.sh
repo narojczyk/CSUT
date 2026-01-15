@@ -87,9 +87,9 @@ w=${#dset_end_id}     # to set the width of the printf filed
 
 while [ $i -le $dset_end_id ]; do
 
-  printf "\n Now processing %${w}d of %${w}d data ID's\n" \
+  printf "\n Started at `date +%T`\t"
+  printf "Processing data set %${w}d of %${w}d\n" \
     $i $dset_end_id
-  printf " Started at `date +%T`\n"
 
   source ${MODULES}/sub_link_and_extract_data.sh $i
 
