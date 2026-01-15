@@ -12,6 +12,10 @@ master="csut.sh"
 module_Sijkl="modules/Sijkl/Sijkl-processing.sh"
 module_eagle_claim="modules/cluster/eagle/claim_results.sh"
 module_eagle_expunge="modules/cluster/eagle/expunge_jobs.sh"
+module_eagle_expunge_scr="modules/cluster/eagle/expunge_scratch.sh"
+module_eagle_retrive_partial="modules/cluster/eagle/retrive_partial_results.sh"
+module_eagle_updateSQL="modules/cluster/eagle/updateSQL.sh"
+
 currentWorkDir=`pwd`
 parentDirName=`pwd | sed 's;^.*/;;'`
 
