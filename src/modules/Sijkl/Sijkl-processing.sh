@@ -89,6 +89,7 @@ while [ $i -le $dset_end_id ]; do
 
   printf "\n Now processing %${w}d of %${w}d data ID's\n" \
     $i $dset_end_id
+  printf " Started at `date +%T`\n"
 
   source ${MODULES}/sub_link_and_extract_data.sh $i
 
@@ -144,6 +145,7 @@ while [ $i -le $dset_end_id ]; do
   # Proceed with next data set
   (( i++ ))
 done
+printf "\n Finished at `date +%T`\n"
 
 cd $startdir
 exit 0
