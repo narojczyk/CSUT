@@ -37,4 +37,15 @@ echo "lastBinInput=${bininput}" >> $cacheInfo
 echo "lastFullInput=${fullinput}" >> $cacheInfo
 
 # remove patrtial files after merging
-rm *.part*
+part_files_to_remove=(`find . -iname "*part*"`)
+part_files_to_removeN=${#part_files_to_remove[@]}
+
+j=0
+while [ $j -lt $part_files_to_removeN ]; do
+  rm ${part_files_to_remove[$j]}
+  (( j++ ))
+  progress_bar=`$FPB $j $part_files_to_removeN $pbLength`
+  progress_msg=`printf "$msgItemFormat" "removing obsolete files" "$progress_bar"`
+  echo -ne "$progress_msg"\\r
+done
+echo
