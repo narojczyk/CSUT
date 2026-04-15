@@ -10,7 +10,7 @@ printf "\n * location: %s\n" ${DATAREPO/*${USER}/"~"}
 
 # Get the list of dated sub-repositories (Tdsr)
 unset Tdsr
-Tdsr=(`ls -1d $DATAREPO/20* | grep -v _NuS | eval "sed 's/\/home.*\///'"`)
+Tdsr=(`ls -1dtr $DATAREPO/20* | grep -v _NuS | eval "sed 's/\/home.*\///'"`)
 TdsrN=${#Tdsr[@]}
 
 i=0
