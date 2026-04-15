@@ -82,4 +82,54 @@ dset_end_id=${dset_end_id:=$((TdsetN-1))}
 # Sanity check of the selection
 test_index_in_range $dset_sta_id $dset_end_id $TdsetN
 
+if [ $dset_sta_id -eq $dset_end_id ]; then
+  # display possible _sd values for the selected data set
+  isel=$dset_sta_id
+  uniqueSD=(`ls -1 $DATAREPO/$subrepository/${Tdset[$isel]}*csv |\
+    sed 's/^.*_sd//' | sed 's/[_\.].*//' | sort -u`)
+
+  printf "\n   possible SD-values for\n   %s\n\n" ${Tdset[$isel]}
+  printf "\t%-10s %-10s %-10s %-10s %-10s\n" "${uniqueSD[@]}"
+
+  printf "\n   enter space separated list of sd values to select them\n"
+  printf "   start with '-' to specify the excluded list of sd values\n"
+  printf "   all will be selected by default [all]: "
+  read -a SD_selection_string
+
+  # select all by default
+  selectedSDtab=(`echo ${uniqueSD[@]}`)
+echo ${selectedSDtab[@]}
+  # check if the first sign is a '-'
+  SDselectionMode="${SD_selection_string:0:1}"
+  if [ "$SDselectionMode" == "-" ]; then
+    SD_selection_string=${SD_selection_string:1}
+
+    # associacion table for values to remove
+    declare -A filterOut
+    for x in "${SD_selection_string[@]}"; do filterOut["$x"]=1; done
+
+    # clear selection by default
+    selectedSDtab=()
+
+    # prepare the list of selected SD values
+    for x in "${uniqueSD[@]}"; do
+      if [[ -z ${filterOut["$x"]} ]]; then
+        selectedSDtab+=("$x")
+      fi
+    done
+  else
+    echo ${#SD_selection_string[@]}
+    if [ ${#SD_selection_string[@]} -gt 0 ]; then
+    # otherwise the default selection of all SD values has been made
+      # use user imput directly as the selected list of elements
+      selectedSDtab=(${SD_selection_string[@]})
+    else
+      selectedSDtab=(${uniqueSD[@]})
+    fi
+  fi
+  echo "   Selected SD values for processing:"
+  printf "\t%-10s %-10s %-10s %-10s %-10s\n" ${selectedSDtab[@]}
+fi
+
+
 return 0
