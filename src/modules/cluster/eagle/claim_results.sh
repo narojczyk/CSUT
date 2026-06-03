@@ -108,9 +108,9 @@ if [ $fin_count -gt 0 ]; then
     printf "\t[ %${#setsN}d ] %s N= %s (%5d/%5d jobs %5s%% )\n" $j ${s} ${n} $setFinCount $jobsInSet $prcfin
     (( j++ ))
   done
-  printf " Select job set to inspect for results [all]: " ;  read setID
+  setIDstart=0
+  printf " Select job set to inspect for results [${setIDstart}]: " ;  read setID
   if [ ! $setID ]; then
-    setIDstart=0
     setIDend=$setsN; (( setIDend-- ))
   elif [ $setID -lt 0 ] || [ $setID -ge $setsN ]; then
     printf " %s [%s] index out of range\n" ${R_err} $SNAME
@@ -124,6 +124,7 @@ else
   exit 0
 fi
 
+
 # Set initial control array for printing progress bar (see IOfunctions)
 dpctrl=( 0 0 76 ' ' )
 
@@ -135,14 +136,14 @@ while [ $i -le $setIDend ]; do
   n=`echo ${sets[$i]} | cut -d ';' -f 2` # N-particles signature
 
   printf "\n Current job set: [ %${#setsN}d ] %s %s\n" $i ${s} ${n}
-  echo -ne " Preparing the list of jobs ... "\\r
+  echo -ne " Re-checking the list of finished jobs ... "\\r
 
   if [ $useSQL -eq 1 ]; then
     SQLQUERRY="SELECT JOBDIR FROM ${SQLTABLE} WHERE (STATUS LIKE 'finished' AND JOBDIR LIKE '${s}%_${n}_%');"
     jobSel=( `SQLconnect "${SQLQUERRY}"` )
   else
-    jobSel=(`find ./${s}*_${n}_* -iname "JOB*finished.txt" |\
-      sed 's;/JOB.*;;' | sed 's;^\./;;' |  sort`);
+    jobSel=(`find . -maxdepth 2 -type f -iname "JOB*finished.txt" 2>/dev/null |\
+      grep ${s} | grep _${n}_ | grep -v del | sed 's;/JOB.*;;' | sed 's;^\./;;' |  sort `);
   fi
   jobSelN=${#jobSel[@]}
   printf " %-60s\n" "Selected ${jobSelN} jobs"
