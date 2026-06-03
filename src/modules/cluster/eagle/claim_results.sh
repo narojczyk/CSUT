@@ -73,11 +73,11 @@ if [ ${useSQL} -eq 1 ]; then
   SQLQUERRY="SELECT COUNT(ID) FROM ${SQLTABLE} WHERE STATUS LIKE 'failed';"
   fail_count=`SQLconnect "${SQLQUERRY}"`
 else
-  sets=(`ls -1d 20??-${mask}* | grep -v "\." |\
+  sets=(` find . -maxdepth 1 -type d -iname "20??-${mask}*" | sed 's/^..//' |\
     sed 's/\(20..-..-..\)_.*_\([0-9][0-9][0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)_.*/\1;\2/' |\
     sort -u`)
-  fin_count=`find ./20??-${mask}* -iname "JOB*finished.txt" |wc -l`;
-  fail_count=`find ./20??-${mask}* -iname "JOB*failed.txt" |wc -l`;
+  fin_count=`find . -maxdepth 2 -type f -iname "JOB*finished.txt" 2>/dev/null |grep ${mask} | grep -v del |wc -l`;
+  fail_count=`find . -maxdepth 2 -type f -iname "JOB*failed.txt" 2>/dev/null | grep ${mask} | grep -v del |wc -l`;
 fi
 setsN=${#sets[@]}
 
