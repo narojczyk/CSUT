@@ -146,7 +146,7 @@ while [ $i -le $setIDend ]; do
     jobSel=( `SQLconnect "${SQLQUERRY}"` )
   else
     jobSel=(`find . -maxdepth 2 -type f -iname "JOB*finished.txt" 2>/dev/null |\
-      grep ${s} | grep _${n}_ | grep -v del | sed 's;/JOB.*;;' | sed 's;^\./;;' |  sort `);
+      grep ${s} | grep _${n}_ | grep -v del | grep -v ^./[^2] | sed 's;/JOB.*;;' | sed 's;^\./;;' |  sort `);
   fi
   jobSelN=${#jobSel[@]}
   printf " %-60s\n" "Selected ${jobSelN} jobs"
