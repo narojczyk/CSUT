@@ -7,7 +7,7 @@ opMode=""
 loadConfig=0
 debugMode=0
 
-showLastN=15 # Display N last entries of data array
+showLastN=10 # Display N last entries of data array
 
 # Default file names
 usrConfig="none"

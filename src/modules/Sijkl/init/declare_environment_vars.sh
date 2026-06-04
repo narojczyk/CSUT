@@ -12,7 +12,7 @@ BINARYDIR="$CODESDIR/SNpT"
 
 #   utility programs
 FPB="${CORE_UTILS}/fancypb"
-PYTHON="/usr/bin/python2"
+PYTHON="/usr/bin/python3"
 
 script_dirs=( MODULES INITIALS UTILS GPLT HELPERS BINARYDIR )
 
