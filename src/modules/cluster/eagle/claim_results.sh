@@ -76,8 +76,11 @@ else
   sets=(` find . -maxdepth 1 -type d -iname "20??-${mask}*" | sed 's/^..//' |\
     sed 's/\(20..-..-..\)_.*_\([0-9][0-9][0-9][0-9]_[0-9][0-9]-[0-9][0-9]-[0-9][0-9]\)_.*/\1;\2/' |\
     sort -u`)
-  fin_count=`find . -maxdepth 2 -type f -iname "JOB*finished.txt" 2>/dev/null |grep ${mask} | grep -v del |wc -l`;
-  fail_count=`find . -maxdepth 2 -type f -iname "JOB*failed.txt" 2>/dev/null | grep ${mask} | grep -v del |wc -l`;
+  grepMask=`echo "20[0-9][0-9]-${mask}" | sed 's/\*//'`;
+  fin_count=`find . -maxdepth 2 -type f -iname "JOB*finished.txt" 2>/dev/null |\
+    grep ${grepMask} | grep -v del | grep -v ^./[^2] | wc -l`;
+  fail_count=`find . -maxdepth 2 -type f -iname "JOB*failed.txt" 2>/dev/null |\
+    grep ${grepMask} | grep -v del | grep -v ^./[^2] | wc -l`;
 fi
 setsN=${#sets[@]}
 
